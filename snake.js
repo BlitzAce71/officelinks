@@ -145,6 +145,15 @@ function renderSnake() {
   ctx.drawImage(foodImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
 
+let musicStarted = false;
+
+function startMusic() {
+  if (!musicStarted) {
+    backgroundMusic.play();
+    musicStarted = true;
+  }
+}
+
 function handleKeyPress(event) {
   const key = event.key;
   if (key === 'ArrowUp' && direction !== 'down') {
@@ -156,6 +165,7 @@ function handleKeyPress(event) {
   } else if (key === 'ArrowRight' && direction !== 'left') {
     direction = 'right';
   }
+  startMusic();
 }
 
 document.addEventListener('keydown', handleKeyPress);
@@ -163,6 +173,6 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.1.001";
+const versionHistory = "Version 1.1.002";
 document.getElementById('versionHistory').innerText = versionHistory;
 backgroundMusic.play();
