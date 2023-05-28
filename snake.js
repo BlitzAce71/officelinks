@@ -156,3 +156,6 @@ document.addEventListener('keydown', handleKeyPress);
 
 resetGame();
 gameLoop();
+
+const versionHistory = "Version 1.0.001";
+document.getElementById('versionHistory').innerText = versionHistory;
