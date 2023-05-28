@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
-
+let startingX, startingY, direction;
 //starting movement logic
 
 function checkInitialCollision(startingX, startingY, direction) {
@@ -158,7 +158,6 @@ function checkSnakeCollision(head) {
 }
 
 function resetGame() {
-let startingX, startingY, direction;
   snake.length = 0;
 
   do {
