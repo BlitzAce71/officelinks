@@ -4,6 +4,8 @@ const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 
+//movement logic
+
 let startingX;
 let startingY;
 
@@ -11,7 +13,7 @@ let direction;
 do {
   startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
   startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
-  
+
   if (startingX < gridWidth / 2) {
     if (startingY < gridHeight / 2) {
       direction = Math.random() < 0.5 ? 'right' : 'down';
@@ -25,7 +27,7 @@ do {
       direction = Math.random() < 0.5 ? 'left' : 'up';
     }
   }
-} while (isWallCollision(startingX, startingY, direction));
+} while (isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
 function isWallCollision(x, y, direction) {
   switch (direction) {
@@ -35,6 +37,27 @@ function isWallCollision(x, y, direction) {
     case 'right': return x >= gridWidth - 1;
   }
 }
+
+function isSelfCollision(x, y, direction) {
+  const nextHead = getNextHeadPosition(x, y, direction);
+  for (let i = 0; i < snake.length; i++) {
+    if (nextHead.x === snake[i].x && nextHead.y === snake[i].y) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function getNextHeadPosition(x, y, direction) {
+  switch (direction) {
+    case 'up': return { x, y: y - 1 };
+    case 'down': return { x, y: y + 1 };
+    case 'left': return { x: x - 1, y };
+    case 'right': return { x: x + 1, y };
+  }
+}
+
+
 
 
 
