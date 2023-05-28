@@ -4,8 +4,8 @@ const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 
-let startingX = Math.floor(Math.random() * gridWidth);
-let startingY = Math.floor(Math.random() * gridHeight);
+let startingX = Math.floor(Math.random() * (gridWidth - 3)) + 2; // Ensure a starting position away from the walls
+let startingY = Math.floor(Math.random() * (gridHeight - 3)) + 2;
 
 let direction;
 if (startingX < gridWidth / 2) {
