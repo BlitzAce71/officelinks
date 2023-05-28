@@ -6,6 +6,7 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+let food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
 
 let direction;
 const randDirection = Math.random();
@@ -23,7 +24,6 @@ const snake = [
   { x: startingX-2, y: startingY }
 ];
 
-let food = getRandomFoodPosition();
 let gameSpeed = 50;
 let headsEaten = 0;
 
@@ -99,6 +99,7 @@ function updateSnake() {
   snake.unshift(head);
 
   if (head.x === food.position.x && head.y === food.position.y) {
+    faceIndices.unshift(food.faceIndex); // add the eaten face at the beginning of the faceIndices
     food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
     if (headsEaten === 16) {
@@ -106,14 +107,9 @@ function updateSnake() {
       resetGame();
       return;
     }
-    faceIndices.push(snake[snake.length-1].faceIndex); // Add the old tail's face index to the end of faceIndices
-    snake.push({ ...head }); // Add a new tail to the snake (which will be rendered with the eaten face)
   } else {
-    faceIndices.push(faceIndices.shift()); // Rotate faceIndices
     snake.pop();
   }
-  
-  snake.unshift(head); // Add new head to the snake
 }
 
 function checkSnakeCollision(position, includeHead = true) {
@@ -184,5 +180,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.004 ";
+const versionHistory = "Version 1.0.003 ";
 document.getElementById('versionHistory').innerText = versionHistory;
