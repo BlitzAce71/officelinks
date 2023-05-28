@@ -6,7 +6,6 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
-let food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
 
 let direction;
 const randDirection = Math.random();
