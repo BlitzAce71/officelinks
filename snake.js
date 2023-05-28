@@ -28,10 +28,15 @@ let gameSpeed = 50;
 let headsEaten = 0;
 
 function getRandomFoodPosition() {
-  return {
-    x: Math.floor(Math.random() * gridWidth),
-    y: Math.floor(Math.random() * gridHeight)
-  };
+  let position;
+  do {
+    position = {
+      x: Math.floor(Math.random() * gridWidth),
+      y: Math.floor(Math.random() * gridHeight)
+    };
+  } while (checkSnakeCollision(position)); // keep generating if the food would appear on the snake
+
+  return position;
 }
 
 function gameLoop() {
@@ -68,11 +73,11 @@ function updateSnake() {
     return;
   }
 
-  if (checkSnakeCollision(head)) {
-    alert('Game Over');
-    resetGame();
-    return;
-  }
+  if (checkSnakeCollision(head, false)) {
+  alert('Game Over');
+  resetGame();
+  return;
+}
 
   snake.unshift(head);
 
@@ -89,9 +94,9 @@ function updateSnake() {
   }
 }
 
-function checkSnakeCollision(head) {
-  for (let i = 1; i < snake.length; i++) {
-    if (snake[i].x === head.x && snake[i].y === head.y) {
+function checkSnakeCollision(position, includeHead = true) {
+  for (let i = includeHead ? 0 : 1; i < snake.length; i++) {
+    if (snake[i].x === position.x && snake[i].y === position.y) {
       return true;
     }
   }
@@ -157,5 +162,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.001";
+const versionHistory = "Version 1.0.002 ";
 document.getElementById('versionHistory').innerText = versionHistory;
