@@ -4,34 +4,39 @@ const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 
-//movement logic
+//starting movement logic
+
 let startingX;
 let startingY;
+
 let direction;
-
-const snake = [];
-
 do {
-  startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; 
+  startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
   startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
 
   if (startingX < gridWidth / 2) {
     if (startingY < gridHeight / 2) {
-      direction = startingX < startingY ? 'right' : 'down';
+      direction = Math.random() < 0.5 ? 'right' : 'down';
     } else {
-      direction = startingX < (gridHeight - startingY) ? 'right' : 'up';
+      direction = Math.random() < 0.5 ? 'right' : 'up';
     }
   } else {
     if (startingY < gridHeight / 2) {
-      direction = (gridWidth - startingX) < startingY ? 'left' : 'down';
+      direction = Math.random() < 0.5 ? 'left' : 'down';
     } else {
-      direction = (gridWidth - startingX) < (gridHeight - startingY) ? 'left' : 'up';
+      direction = Math.random() < 0.5 ? 'left' : 'up';
     }
   }
+} while (checkInitialCollision(startingX, startingY, direction));
 
-  snake[0] = { x: startingX, y: startingY };
-  snake[1] = { x: startingX-1, y: startingY };
-  snake[2] = { x: startingX-2, y: startingY };
+function checkInitialCollision(startingX, startingY, direction) {
+  switch (direction) {
+    case 'up': return startingY === 0;
+    case 'down': return startingY === gridHeight - 1;
+    case 'left': return startingX === 0;
+    case 'right': return startingX === gridWidth - 1;
+    default: return false;
+  }
 } while (isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
 function isWallCollision(x, y, direction) {
@@ -61,6 +66,17 @@ function getNextHeadPosition(x, y, direction) {
     case 'right': return { x: x + 1, y };
   }
 }
+
+
+
+
+
+
+const snake = [
+  { x: startingX, y: startingY },
+  { x: startingX-1, y: startingY },
+  { x: startingX-2, y: startingY }
+];
 
 let food = getRandomFoodPosition();
 let gameSpeed = 50;
@@ -141,21 +157,16 @@ function resetGame() {
   snake.length = 0;
   startingX = Math.floor(Math.random() * gridWidth);
   startingY = Math.floor(Math.random() * gridHeight);
-  
   if (startingX < gridWidth / 2) {
-    if (startingY < gridHeight / 2) {
-      direction = startingX < startingY ? 'right' : 'down';
-    } else {
-      direction = startingX < (gridHeight - startingY) ? 'right' : 'up';
-    }
+    direction = 'right';
   } else {
-    if (startingY < gridHeight / 2) {
-      direction = (gridWidth - startingX) < startingY ? 'left' : 'down';
-    } else {
-      direction = (gridWidth - startingX) < (gridHeight - startingY) ? 'left' : 'up';
-    }
+    direction = 'left';
   }
-  
+  if (startingY < gridHeight / 2) {
+    direction = direction === 'right' ? 'down' : 'up';
+  } else {
+    direction = direction === 'right' ? 'up' : 'down';
+  }
   snake.push({ x: startingX, y: startingY });
   snake.push({ x: startingX-1, y: startingY });
   snake.push({ x: startingX-2, y: startingY });
@@ -167,7 +178,7 @@ function resetGame() {
 function renderSnake() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  snake.forEach((segment, index) => {
+   snake.forEach((segment, index) => {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
