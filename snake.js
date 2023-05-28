@@ -92,11 +92,13 @@ function updateSnake() {
     food = getRandomFoodPosition();
     headsEaten++;
     if (headsEaten === 16) {
-      backgroundMusic.pause();
-      winSound.play();
-      alert('Congratulations! You win!');
-      resetGame();
-      return;
+  backgroundMusic.pause();
+  winSound.play();
+  setTimeout(function() {
+    alert('Congratulations! You win!');
+    resetGame();
+  }, 10); // This delays the alert by 10 milliseconds
+  return;
     }
     eatSound.play();
   } else {
@@ -140,6 +142,10 @@ function resetGame() {
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();
      }
+  gameOverSound.pause();
+  gameOverSound.currentTime = 0;
+  winSound.pause();
+  winSound.currentTime = 0;
  }
 
 function renderSnake() {
@@ -186,6 +192,6 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.1.003";
+const versionHistory = "Version 1.1.004";
 document.getElementById('versionHistory').innerText = versionHistory;
 backgroundMusic.play();
