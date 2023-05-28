@@ -6,6 +6,7 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+let snakeFaces = [1, 2, 3]; // Add this line at the top of your code where you declare your variables
 
 let direction;
 const randDirection = Math.random();
@@ -76,7 +77,9 @@ let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
 shuffleArray(faceIndices);
 
 function updateSnake() {
-  const head = { ...snake[0] };
+  const head = { ...snake[0] }; // the new head segment
+  const newFaceIndex = snakeFaces[0]; // the face index for the new head segment will be the same as the current head
+
   switch (direction) {
     case 'up':    head.y -= 1; break;
     case 'down':  head.y += 1; break;
@@ -97,9 +100,10 @@ function updateSnake() {
   }
 
   snake.unshift(head);
+  snakeFaces.unshift(newFaceIndex); // add the new face index to the snakeFaces
 
   if (head.x === food.position.x && head.y === food.position.y) {
-    faceIndices.unshift(food.faceIndex); // add the eaten face at the beginning of the faceIndices
+    snakeFaces[0] = food.faceIndex; // update the face index of the head segment to the eaten food face
     food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
     if (headsEaten === 16) {
@@ -109,7 +113,7 @@ function updateSnake() {
     }
   } else {
     snake.pop();
-    faceIndices.pop(); // remove the last face index when the snake's tail is removed
+    snakeFaces.pop(); // remove the last face index when the snake's tail is removed
   }
 }
 
@@ -124,7 +128,7 @@ function checkSnakeCollision(position, includeHead = true) {
 
 function resetGame() {
   snake.length = 0;
-  faceIndices = [1, 2, 3]; // Reset the face indices
+  snakeFaces = [1, 2, 3]; // Reset the face indices
 
   startingX = Math.floor(gridWidth / 2);
   startingY = Math.floor(gridHeight / 2);
@@ -159,7 +163,7 @@ function renderSnake() {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
-    image.src = 'face' + faceIndices[index % 17] + '.png';
+    image.src = 'face' + snakeFaces[index] + '.png'; // use snakeFaces to set the source
     ctx.drawImage(image, x, y, gridSize, gridSize);
   });
 
@@ -168,23 +172,8 @@ function renderSnake() {
   ctx.drawImage(foodImage, food.position.x * gridSize, food.position.y * gridSize, gridSize, gridSize);
 }
 
-function handleKeyPress(event) {
-  const key = event.key;
-  if (key === 'ArrowUp' && direction !== 'down') {
-    direction = 'up';
-  } else if (key === 'ArrowDown' && direction !== 'up') {
-    direction = 'down';
-  } else if (key === 'ArrowLeft' && direction !== 'right') {
-    direction = 'left';
-  } else if (key === 'ArrowRight' && direction !== 'left') {
-    direction = 'right';
-  }
-}
-
-document.addEventListener('keydown', handleKeyPress);
-
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.009 ";
+const versionHistory = "Version 1.0.010 ";
 document.getElementById('versionHistory').innerText = versionHistory;
