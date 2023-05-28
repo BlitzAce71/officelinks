@@ -11,6 +11,7 @@ const eatSound = new Audio('eatSound.mp3');
 const gameOverSound = new Audio('lose.mp3');
 const winSound = new Audio('win.mp3');
 let gameRunning = false;
+let isGameOver = false;
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
@@ -43,8 +44,10 @@ function getRandomFoodPosition() {
 
 function gameLoop() {
   setTimeout(() => {
-    updateSnake();
-    renderSnake();
+    if (!isGameOver) {
+      updateSnake();
+      renderSnake();
+    }
     requestAnimationFrame(gameLoop);
   }, gameSpeed);
 }
@@ -64,6 +67,7 @@ function showModal(text) {
   document.getElementById('modalText').innerText = text;
   document.getElementById('modal').style.display = 'block';
   gameRunning = false; // Set gameRunning to false when showing the modal
+  isGameOver = true; // Set isGameOver to true
 }
 
 document.getElementById('modalButton').addEventListener('click', function() {
@@ -127,6 +131,7 @@ function checkSnakeCollision(head) {
 }
 
 function resetGame() {
+  isGameOver = false;
   snake.length = 0;
   startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
   startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
@@ -212,5 +217,5 @@ resetGame();
 gameRunning = true; // Set gameRunning to true when starting the game
 gameLoop();
 
-const versionHistory = "Version 1.1.006";
+const versionHistory = "Version 1.1.007";
 document.getElementById('versionHistory').innerText = versionHistory;
