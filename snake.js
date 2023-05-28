@@ -97,9 +97,10 @@ function updateSnake() {
     return;
   }
 
+  snake.unshift(head); // Add new head to the snake
+
   if (head.x === food.position.x && head.y === food.position.y) {
     // Food is eaten
-    snake.unshift(head); // Add new head to the snake
     faceIndices.push(food.faceIndex); // Add the eaten face's index to the end of faceIndices
     food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
@@ -110,10 +111,31 @@ function updateSnake() {
     }
   } else {
     // Food is not eaten
-    snake.unshift(head); // Add new head to the snake
     snake.pop(); // Remove last segment (tail) of the snake
   }
 }
+
+function getFaceIndex() {
+  const faceIndex = faceIndices.shift(); // get the face index from the shuffled faceIndices
+  return faceIndex;
+}
+
+function renderSnake() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  snake.forEach((segment, index) => {
+    const x = segment.x * gridSize;
+    const y = segment.y * gridSize;
+    const image = new Image();
+    image.src = 'face' + faceIndices[index % faceIndices.length] + '.png';
+    ctx.drawImage(image, x, y, gridSize, gridSize);
+  });
+
+  const foodImage = new Image();
+  foodImage.src = 'face' + food.faceIndex + '.png'; // draw the face that is currently food
+  ctx.drawImage(foodImage, food.position.x * gridSize, food.position.y * gridSize, gridSize, gridSize);
+}
+
 
 function checkSnakeCollision(position, includeHead = true) {
   for (let i = includeHead ? 0 : 1; i < snake.length; i++) {
@@ -183,5 +205,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.006 ";
+const versionHistory = "Version 1.0.007 ";
 document.getElementById('versionHistory').innerText = versionHistory;
