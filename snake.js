@@ -72,11 +72,11 @@ function shuffleArray(array) {
   }
 }
 
-let faceIndices = [];
+let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
 shuffleArray(faceIndices);
 
 function updateSnake() {
-  const head = { ...snake[0] }; 
+  const head = { ...snake[0] };
   switch (direction) {
     case 'up':    head.y -= 1; break;
     case 'down':  head.y += 1; break;
@@ -99,8 +99,6 @@ function updateSnake() {
   snake.unshift(head);
 
   if (head.x === food.position.x && head.y === food.position.y) {
-    // Food is eaten
-    faceIndices.push(food.faceIndex); // Add the eaten face's index to the end of faceIndices
     food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
     if (headsEaten === 16) {
@@ -108,33 +106,15 @@ function updateSnake() {
       resetGame();
       return;
     }
+    faceIndices.push(snake[snake.length-1].faceIndex); // Add the old tail's face index to the end of faceIndices
+    snake.push({ ...head }); // Add a new tail to the snake (which will be rendered with the eaten face)
   } else {
-    // Food is not eaten
-    snake.pop(); // Remove last segment (tail) of the snake
+    faceIndices.push(faceIndices.shift()); // Rotate faceIndices
+    snake.pop();
   }
+  
+  snake.unshift(head); // Add new head to the snake
 }
-
-function getFaceIndex() {
-  const faceIndex = faceIndices.shift(); // get the face index from the shuffled faceIndices
-  return faceIndex;
-}
-
-function renderSnake() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  snake.forEach((segment, index) => {
-    const x = segment.x * gridSize;
-    const y = segment.y * gridSize;
-    const image = new Image();
-    image.src = 'face' + faceIndices[index] + '.png';
-    ctx.drawImage(image, x, y, gridSize, gridSize);
-  });
-
-  const foodImage = new Image();
-  foodImage.src = 'face' + food.faceIndex + '.png'; // draw the face that is currently food
-  ctx.drawImage(foodImage, food.position.x * gridSize, food.position.y * gridSize, gridSize, gridSize);
-}
-
 
 function checkSnakeCollision(position, includeHead = true) {
   for (let i = includeHead ? 0 : 1; i < snake.length; i++) {
@@ -167,8 +147,7 @@ function resetGame() {
 
   food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
   headsEaten = 0;
-  // Set the initial faceIndices for the snake
-  faceIndices = [1, 2, 3];
+  shuffleArray(faceIndices);
 }
 
 function renderSnake() {
@@ -205,5 +184,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.008 ";
+const versionHistory = "Version 1.0.004 ";
 document.getElementById('versionHistory').innerText = versionHistory;
