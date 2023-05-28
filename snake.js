@@ -6,6 +6,7 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+let food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
 
 let direction;
 const randDirection = Math.random();
@@ -37,6 +38,23 @@ function getRandomFoodPosition() {
   } while (checkSnakeCollision(position)); // keep generating if the food would appear on the snake
 
   return position;
+}
+
+function getRandomFoodPosition() {
+  let position;
+  do {
+    position = {
+      x: Math.floor(Math.random() * gridWidth),
+      y: Math.floor(Math.random() * gridHeight)
+    };
+  } while (checkSnakeCollision(position)); // keep generating if the food would appear on the snake
+
+  return position;
+}
+
+function getFaceIndex() {
+  const faceIndex = faceIndices.pop(); // get the face index from the shuffled faceIndices
+  return faceIndex;
 }
 
 function gameLoop() {
@@ -74,15 +92,16 @@ function updateSnake() {
   }
 
   if (checkSnakeCollision(head, false)) {
-  alert('Game Over');
-  resetGame();
-  return;
-}
+    alert('Game Over');
+    resetGame();
+    return;
+  }
 
   snake.unshift(head);
 
-  if (head.x === food.x && head.y === food.y) {
-    food = getRandomFoodPosition();
+  if (head.x === food.position.x && head.y === food.position.y) {
+    faceIndices.unshift(food.faceIndex); // add the eaten face at the beginning of the faceIndices
+    food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
     if (headsEaten === 16) {
       alert('Congratulations! You win!');
@@ -123,7 +142,7 @@ function resetGame() {
     snake.push({ x: startingX, y: startingY-2 });
   }
 
-  food = getRandomFoodPosition();
+  food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
   headsEaten = 0;
   shuffleArray(faceIndices);
 }
@@ -131,7 +150,7 @@ function resetGame() {
 function renderSnake() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-   snake.forEach((segment, index) => {
+  snake.forEach((segment, index) => {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
@@ -140,8 +159,8 @@ function renderSnake() {
   });
 
   const foodImage = new Image();
-  foodImage.src = 'food.png';
-  ctx.drawImage(foodImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+  foodImage.src = 'face' + food.faceIndex + '.png'; // draw the face that is currently food
+  ctx.drawImage(foodImage, food.position.x * gridSize, food.position.y * gridSize, gridSize, gridSize);
 }
 
 function handleKeyPress(event) {
@@ -162,5 +181,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.002 ";
+const versionHistory = "Version 1.0.003 ";
 document.getElementById('versionHistory').innerText = versionHistory;
