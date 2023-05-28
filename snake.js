@@ -56,9 +56,14 @@ function getRandomFoodPosition() {
 }
 
 function getFaceIndex() {
+  if (faceIndices.length === 0) {
+    faceIndices = Array.from({length: 17}, (_, i) => i + 1); // refill the array
+    shuffleArray(faceIndices);
+  }
   const faceIndex = faceIndices.pop(); // get the face index from the shuffled faceIndices
   return faceIndex;
 }
+
 
 function gameLoop() {
   setTimeout(() => {
@@ -78,7 +83,7 @@ function shuffleArray(array) {
 
 function updateSnake() {
   const head = { ...snake[0] }; // the new head segment
-  const newFaceIndex = snakeFaces[0]; // the face index for the new head segment will be the same as the current head
+  const newFaceIndex = snakeFaces[0]; // this will be the face index for the new head segment
 
   switch (direction) {
     case 'up':    head.y -= 1; break;
@@ -103,7 +108,7 @@ function updateSnake() {
   snakeFaces.unshift(newFaceIndex); // add the new face index to the snakeFaces
 
   if (head.x === food.position.x && head.y === food.position.y) {
-    snakeFaces[0] = food.faceIndex; // update the face index of the head segment to the eaten food face
+    snakeFaces[0] = food.faceIndex; // this will change only the head's face to the face of the eaten food
     food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
     if (headsEaten === 16) {
@@ -186,5 +191,5 @@ window.addEventListener('keydown', e => {
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.012 ";
+const versionHistory = "Version 1.0.013";
 document.getElementById('versionHistory').innerText = versionHistory;
