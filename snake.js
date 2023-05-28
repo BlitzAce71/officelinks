@@ -129,12 +129,12 @@ function renderSnake() {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
-    image.src = face' + faceIndices[index % 17] + '.png';
+    image.src = root/face' + faceIndices[index % 17] + '.png';
     ctx.drawImage(image, x, y, gridSize, gridSize);
   });
 
   const foodImage = new Image();
-  foodImage.src = food.png';
+  foodImage.src = root/food.png';
   ctx.drawImage(foodImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
 
