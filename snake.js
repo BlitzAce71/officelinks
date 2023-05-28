@@ -27,16 +27,6 @@ do {
       direction = (gridWidth - startingX) < (gridHeight - startingY) ? 'left' : 'up';
     }
   }
-} while (checkInitialCollision(startingX, startingY, direction));
-
-function checkInitialCollision(startingX, startingY, direction) {
-  switch (direction) {
-    case 'up': return startingY === 0;
-    case 'down': return startingY === gridHeight - 1;
-    case 'left': return startingX === 0;
-    case 'right': return startingX === gridWidth - 1;
-    default: return false;
-  }
 } while (isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
 function isWallCollision(x, y, direction) {
