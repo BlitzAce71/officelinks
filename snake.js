@@ -72,12 +72,11 @@ function shuffleArray(array) {
   }
 }
 
-let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
+let faceIndices = [];
 shuffleArray(faceIndices);
 
 function updateSnake() {
-  const head = { ...snake[0] }; // New head that might be added to the snake
-
+  const head = { ...snake[0] }; 
   switch (direction) {
     case 'up':    head.y -= 1; break;
     case 'down':  head.y += 1; break;
@@ -97,7 +96,7 @@ function updateSnake() {
     return;
   }
 
-  snake.unshift(head); // Add new head to the snake
+  snake.unshift(head);
 
   if (head.x === food.position.x && head.y === food.position.y) {
     // Food is eaten
@@ -127,7 +126,7 @@ function renderSnake() {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
-    image.src = 'face' + faceIndices[index % faceIndices.length] + '.png';
+    image.src = 'face' + faceIndices[index] + '.png';
     ctx.drawImage(image, x, y, gridSize, gridSize);
   });
 
@@ -168,7 +167,8 @@ function resetGame() {
 
   food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
   headsEaten = 0;
-  shuffleArray(faceIndices);
+  // Set the initial faceIndices for the snake
+  faceIndices = [1, 2, 3];
 }
 
 function renderSnake() {
@@ -205,5 +205,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.007 ";
+const versionHistory = "Version 1.0.008 ";
 document.getElementById('versionHistory').innerText = versionHistory;
