@@ -4,20 +4,24 @@ const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 
-let startingX = Math.floor(Math.random() * (gridWidth - 3)) + 2; // Ensure a starting position away from the walls
-let startingY = Math.floor(Math.random() * (gridHeight - 3)) + 2;
+let startingX = Math.floor(Math.random() * (gridWidth - 4)) + 2; // Ensure a starting position away from the walls
+let startingY = Math.floor(Math.random() * (gridHeight - 4)) + 2;
 
 let direction;
 if (startingX < gridWidth / 2) {
-  direction = 'right';
+  if (startingY < gridHeight / 2) {
+    direction = Math.random() < 0.5 ? 'right' : 'down';
+  } else {
+    direction = Math.random() < 0.5 ? 'right' : 'up';
+  }
 } else {
-  direction = 'left';
+  if (startingY < gridHeight / 2) {
+    direction = Math.random() < 0.5 ? 'left' : 'down';
+  } else {
+    direction = Math.random() < 0.5 ? 'left' : 'up';
+  }
 }
-if (startingY < gridHeight / 2) {
-  direction = direction === 'right' ? 'down' : 'up';
-} else {
-  direction = direction === 'right' ? 'up' : 'down';
-}
+
 
 const snake = [
   { x: startingX, y: startingY },
