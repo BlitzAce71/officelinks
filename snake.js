@@ -98,7 +98,8 @@ function updateSnake() {
 
   snake.unshift(head);
 
-  if (head.x === food.position.x && head.y === food.position.y) {
+   if (head.x === food.position.x && head.y === food.position.y) {
+    faceIndices.push(food.faceIndex); // Add the eaten face's index to the end of faceIndices
     food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
     headsEaten++;
     if (headsEaten === 16) {
@@ -106,13 +107,10 @@ function updateSnake() {
       resetGame();
       return;
     }
-    faceIndices.push(snake[snake.length-1].faceIndex); // Add the old tail's face index to the end of faceIndices
-    snake.push({ ...head }); // Add a new tail to the snake (which will be rendered with the eaten face)
   } else {
-    faceIndices.push(faceIndices.shift()); // Rotate faceIndices
     snake.pop();
   }
-  
+
   snake.unshift(head); // Add new head to the snake
 }
 
@@ -184,5 +182,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.004 ";
+const versionHistory = "Version 1.0.005 ";
 document.getElementById('versionHistory').innerText = versionHistory;
