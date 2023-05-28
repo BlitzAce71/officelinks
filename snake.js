@@ -134,7 +134,7 @@ function renderSnake() {
   });
 
   const foodImage = new Image();
-  foodImage.src = 'officelinks/food.png';
+  foodImage.src = 'food.png';
   ctx.drawImage(foodImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
 
