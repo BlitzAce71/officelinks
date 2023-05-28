@@ -1,20 +1,33 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 50;
-const gridWidth = Math.floor(canvas.width / gridSize);   // Adjust this line
-const gridHeight = Math.floor(canvas.height / gridSize); // Adjust this line
+const gridWidth = Math.floor(canvas.width / gridSize);
+const gridHeight = Math.floor(canvas.height / gridSize);
 
+let startingX = Math.floor(Math.random() * gridWidth);
+let startingY = Math.floor(Math.random() * gridHeight);
+
+let direction;
+if (startingX < gridWidth / 2) {
+  direction = 'right';
+} else {
+  direction = 'left';
+}
+if (startingY < gridHeight / 2) {
+  direction = direction === 'right' ? 'down' : 'up';
+} else {
+  direction = direction === 'right' ? 'up' : 'down';
+}
 
 const snake = [
-  { x: 10, y: 10 },
-  { x: 20, y: 10 },
-  { x: 30, y: 10 }
+  { x: startingX, y: startingY },
+  { x: startingX-1, y: startingY },
+  { x: startingX-2, y: startingY }
 ];
 
-let direction = 'right';
 let food = getRandomFoodPosition();
-let gameSpeed = 500;
-let headsEaten = 0; // Counter for the number of heads eaten
+let gameSpeed = 50;
+let headsEaten = 0;
 
 function getRandomFoodPosition() {
   return {
@@ -31,59 +44,54 @@ function gameLoop() {
   }, gameSpeed);
 }
 
+// Shuffle array function
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
+shuffleArray(faceIndices);
+
 function updateSnake() {
   const head = { ...snake[0] };
-
   switch (direction) {
-    case 'up':
-      head.y -= 1;
-      break;
-    case 'down':
-      head.y += 1;
-      break;
-    case 'left':
-      head.x -= 1;
-      break;
-    case 'right':
-      head.x += 1;
-      break;
+    case 'up':    head.y -= 1; break;
+    case 'down':  head.y += 1; break;
+    case 'left':  head.x -= 1; break;
+    case 'right': head.x += 1; break;
   }
 
-  // Check for collision with walls
-  if (head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight) {
+  if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
     alert('Game Over');
     resetGame();
-    return; // Exit the function to prevent further updates after game over
+    return;
   }
 
-  // Check for collision with snake's body
-  if (checkSnakeCollision()) {
+  if (checkSnakeCollision(head)) {
     alert('Game Over');
     resetGame();
-    return; // Exit the function to prevent further updates after game over
+    return;
   }
 
   snake.unshift(head);
 
-  // Check for collision with food
   if (head.x === food.x && head.y === food.y) {
-    if (headsEaten === 17) {
-      // Win condition: All 17 heads eaten and one more piece of food eaten
+    food = getRandomFoodPosition();
+    headsEaten++;
+    if (headsEaten === 18) {
       alert('Congratulations! You win!');
       resetGame();
-      return; // Exit the function to prevent further updates after winning
-    } else {
-      food = getRandomFoodPosition();
-      headsEaten++; // Increment the headsEaten counter
+      return;
     }
   } else {
     snake.pop();
   }
 }
 
-
-function checkSnakeCollision() {
-  const head = snake[0];
+function checkSnakeCollision(head) {
   for (let i = 1; i < snake.length; i++) {
     if (snake[i].x === head.x && snake[i].y === head.y) {
       return true;
@@ -94,32 +102,41 @@ function checkSnakeCollision() {
 
 function resetGame() {
   snake.length = 0;
-  snake.push({ x: 10, y: 10 });
-  snake.push({ x: 20, y: 10 });
-  snake.push({ x: 30, y: 10 });
-  direction = 'right';
+  startingX = Math.floor(Math.random() * gridWidth);
+  startingY = Math.floor(Math.random() * gridHeight);
+  if (startingX < gridWidth / 2) {
+    direction = 'right';
+  } else {
+    direction = 'left';
+  }
+  if (startingY < gridHeight / 2) {
+    direction = direction === 'right' ? 'down' : 'up';
+  } else {
+    direction = direction === 'right' ? 'up' : 'down';
+  }
+  snake.push({ x: startingX, y: startingY });
+  snake.push({ x: startingX-1, y: startingY });
+  snake.push({ x: startingX-2, y: startingY });
   food = getRandomFoodPosition();
-  headsEaten = 0; // Reset the headsEaten counter
-  renderSnake();
+  headsEaten = 0;
+  shuffleArray(faceIndices);
 }
 
 function renderSnake() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  snake.forEach((segment, index) => {
+   snake.forEach((segment, index) => {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
-    image.src = 'C:/Users/TW043766/OneDrive - Cerner Corporation/Desktop/Discord/ol/snake/face' + (index % 17) + '.png';
+    image.src = 'face' + faceIndices[index % 17] + '.png';
     ctx.drawImage(image, x, y, gridSize, gridSize);
   });
 
   const foodImage = new Image();
-  foodImage.src = 'C:/Users/TW043766/OneDrive - Cerner Corporation/Desktop/Discord/ol/snake/food.png';
+  foodImage.src = 'food.png';
   ctx.drawImage(foodImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
-
-
 
 function handleKeyPress(event) {
   const key = event.key;
