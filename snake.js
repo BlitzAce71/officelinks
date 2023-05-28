@@ -4,23 +4,39 @@ const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 
-let startingX = Math.floor(Math.random() * (gridWidth - 4)) + 2; // Ensure a starting position away from the walls
-let startingY = Math.floor(Math.random() * (gridHeight - 4)) + 2;
+let startingX;
+let startingY;
 
 let direction;
-if (startingX < gridWidth / 2) {
-  if (startingY < gridHeight / 2) {
-    direction = Math.random() < 0.5 ? 'right' : 'down';
+do {
+  startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
+  startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
+  
+  if (startingX < gridWidth / 2) {
+    if (startingY < gridHeight / 2) {
+      direction = Math.random() < 0.5 ? 'right' : 'down';
+    } else {
+      direction = Math.random() < 0.5 ? 'right' : 'up';
+    }
   } else {
-    direction = Math.random() < 0.5 ? 'right' : 'up';
+    if (startingY < gridHeight / 2) {
+      direction = Math.random() < 0.5 ? 'left' : 'down';
+    } else {
+      direction = Math.random() < 0.5 ? 'left' : 'up';
+    }
   }
-} else {
-  if (startingY < gridHeight / 2) {
-    direction = Math.random() < 0.5 ? 'left' : 'down';
-  } else {
-    direction = Math.random() < 0.5 ? 'left' : 'up';
+} while (isWallCollision(startingX, startingY, direction));
+
+function isWallCollision(x, y, direction) {
+  switch (direction) {
+    case 'up': return y <= 0;
+    case 'down': return y >= gridHeight - 1;
+    case 'left': return x <= 0;
+    case 'right': return x >= gridWidth - 1;
   }
 }
+
+
 
 
 const snake = [
