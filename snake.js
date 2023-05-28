@@ -157,27 +157,25 @@ function checkSnakeCollision(head) {
   return false;
 }
 
+let startingX, startingY, direction;
+
 function resetGame() {
   snake.length = 0;
-  startingX = Math.floor(Math.random() * gridWidth);
-  startingY = Math.floor(Math.random() * gridHeight);
-  if (startingX < gridWidth / 2) {
-    direction = 'right';
-  } else {
-    direction = 'left';
-  }
-  if (startingY < gridHeight / 2) {
-    direction = direction === 'right' ? 'down' : 'up';
-  } else {
-    direction = direction === 'right' ? 'up' : 'down';
-  }
+
+  do {
+    startingX = Math.floor(Math.random() * ((gridWidth / 2) - 2)) + 1;
+    startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
+    if (startingY < gridHeight / 2) {
+      direction = Math.random() < 0.5 ? 'right' : 'down';
+    } else {
+      direction = Math.random() < 0.5 ? 'right' : 'up';
+    }
+  } while (checkInitialCollision(startingX, startingY, direction));
+
+  // Body of the snake is set after determining the direction
   snake.push({ x: startingX, y: startingY });
 
-  // Add the rest of the body based on the initial direction
-  if (direction === 'left') {
-    snake.push({ x: startingX+1, y: startingY });
-    snake.push({ x: startingX+2, y: startingY });
-  } else if (direction === 'right') {
+  if (direction === 'right') {
     snake.push({ x: startingX-1, y: startingY });
     snake.push({ x: startingX-2, y: startingY });
   } else if (direction === 'up') {
