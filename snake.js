@@ -6,10 +6,6 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 //starting movement logic
 
-let startingX;
-let startingY;
-
-let direction;
 do {
   startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
   startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
@@ -67,16 +63,24 @@ function getNextHeadPosition(x, y, direction) {
   }
 }
 
-
-
-
-
-
 const snake = [
   { x: startingX, y: startingY },
-  { x: startingX-1, y: startingY },
-  { x: startingX-2, y: startingY }
 ];
+
+// Add the rest of the body based on the initial direction
+if (direction === 'left') {
+  snake.push({ x: startingX+1, y: startingY });
+  snake.push({ x: startingX+2, y: startingY });
+} else if (direction === 'right') {
+  snake.push({ x: startingX-1, y: startingY });
+  snake.push({ x: startingX-2, y: startingY });
+} else if (direction === 'up') {
+  snake.push({ x: startingX, y: startingY+1 });
+  snake.push({ x: startingX, y: startingY+2 });
+} else if (direction === 'down') {
+  snake.push({ x: startingX, y: startingY-1 });
+  snake.push({ x: startingX, y: startingY-2 });
+}
 
 let food = getRandomFoodPosition();
 let gameSpeed = 50;
@@ -168,8 +172,22 @@ function resetGame() {
     direction = direction === 'right' ? 'up' : 'down';
   }
   snake.push({ x: startingX, y: startingY });
-  snake.push({ x: startingX-1, y: startingY });
-  snake.push({ x: startingX-2, y: startingY });
+
+  // Add the rest of the body based on the initial direction
+  if (direction === 'left') {
+    snake.push({ x: startingX+1, y: startingY });
+    snake.push({ x: startingX+2, y: startingY });
+  } else if (direction === 'right') {
+    snake.push({ x: startingX-1, y: startingY });
+    snake.push({ x: startingX-2, y: startingY });
+  } else if (direction === 'up') {
+    snake.push({ x: startingX, y: startingY+1 });
+    snake.push({ x: startingX, y: startingY+2 });
+  } else if (direction === 'down') {
+    snake.push({ x: startingX, y: startingY-1 });
+    snake.push({ x: startingX, y: startingY-2 });
+  }
+
   food = getRandomFoodPosition();
   headsEaten = 0;
   shuffleArray(faceIndices);
