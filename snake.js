@@ -4,19 +4,17 @@ const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 
-let startingX = Math.floor(Math.random() * gridWidth);
-let startingY = Math.floor(Math.random() * gridHeight);
+let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
+let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
 
 let direction;
-if (startingX < gridWidth / 2) {
+const randDirection = Math.random();
+if (randDirection < 0.33) {
   direction = 'right';
+} else if (randDirection < 0.66) {
+  direction = 'up';
 } else {
-  direction = 'left';
-}
-if (startingY < gridHeight / 2) {
-  direction = direction === 'right' ? 'down' : 'up';
-} else {
-  direction = direction === 'right' ? 'up' : 'down';
+  direction = 'down';
 }
 
 const snake = [
@@ -81,7 +79,7 @@ function updateSnake() {
   if (head.x === food.x && head.y === food.y) {
     food = getRandomFoodPosition();
     headsEaten++;
-    if (headsEaten === 18) {
+    if (headsEaten === 15) {
       alert('Congratulations! You win!');
       resetGame();
       return;
