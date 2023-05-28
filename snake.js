@@ -24,7 +24,7 @@ const snake = [
 ];
 
 let food = getRandomFoodPosition();
-let gameSpeed = 1;
+let gameSpeed = 50;
 let headsEaten = 0;
 
 function getRandomFoodPosition() {
@@ -63,13 +63,13 @@ function updateSnake() {
   }
 
   if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
-    alert('Game Over1');
+    alert('Game Over');
     resetGame();
     return;
   }
 
   if (checkSnakeCollision(head)) {
-    alert('Game Over1');
+    alert('Game Over');
     resetGame();
     return;
   }
