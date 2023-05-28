@@ -24,7 +24,7 @@ const snake = [
 ];
 
 let food = getRandomFoodPosition();
-let gameSpeed = 50;
+let gameSpeed = 500;
 let headsEaten = 0;
 
 function getRandomFoodPosition() {
