@@ -61,8 +61,18 @@ function shuffleArray(array) {
 let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
 shuffleArray(faceIndices);
 
+function showModal(text) {
+  document.getElementById('modalText').innerText = text;
+  document.getElementById('modal').style.display = 'block';
+}
+
+document.getElementById('modalButton').addEventListener('click', function() {
+  document.getElementById('modal').style.display = 'none';
+  resetGame();
+});
+
 function updateSnake() {
-  const head = { ...snake[0] };
+  const head = { ...snake[0] }; // Copy of the head object
   switch (direction) {
     case 'up':    head.y -= 1; break;
     case 'down':  head.y += 1; break;
@@ -70,39 +80,39 @@ function updateSnake() {
     case 'right': head.x += 1; break;
   }
 
+  // Check for collision with wall
   if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
     backgroundMusic.pause();
     gameOverSound.play();
-    alert('Game Over');
-    resetGame();
+    showModal('Game Over');
     return;
   }
 
+  // Check for collision with self
   if (checkSnakeCollision(head)) {
     backgroundMusic.pause();
     gameOverSound.play();
-    alert('Game Over');
-    resetGame();
+    showModal('Game Over');
     return;
   }
 
-  snake.unshift(head);
+  snake.unshift(head); // Add new head to snake
 
+  // Check if head is on the food
   if (head.x === food.x && head.y === food.y) {
-    food = getRandomFoodPosition();
+    eatSound.play(); // Play eat sound
+    food = getRandomFoodPosition(); // Get new food position
     headsEaten++;
+    
+    // Check for win condition
     if (headsEaten === 16) {
-  backgroundMusic.pause();
-  winSound.play();
-  setTimeout(function() {
-    alert('Congratulations! You win!');
-    resetGame();
-  }, 10); // This delays the alert by 10 milliseconds
-  return;
+      backgroundMusic.pause();
+      winSound.play();
+      showModal('Congratulations! You win!');
+      return;
     }
-    eatSound.play();
   } else {
-    snake.pop();
+    snake.pop(); // Remove the tail of the snake
   }
 }
 
@@ -192,6 +202,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.1.004";
+const versionHistory = "Version 1.1.005";
 document.getElementById('versionHistory').innerText = versionHistory;
-backgroundMusic.play();
