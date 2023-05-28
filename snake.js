@@ -8,6 +8,9 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 const backgroundMusic = new Audio('backgroundMusic.mp3');
 backgroundMusic.loop = true; // The background music should loop
 const eatSound = new Audio('eatSound.mp3');
+const gameOverSound = new Audio('lose.mp3');
+const winSound = new Audio('win.mp3');
+
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
@@ -68,12 +71,16 @@ function updateSnake() {
   }
 
   if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
+    backgroundMusic.pause();
+    gameOverSound.play();
     alert('Game Over');
     resetGame();
     return;
   }
 
   if (checkSnakeCollision(head)) {
+    backgroundMusic.pause();
+    gameOverSound.play();
     alert('Game Over');
     resetGame();
     return;
@@ -85,6 +92,8 @@ function updateSnake() {
     food = getRandomFoodPosition();
     headsEaten++;
     if (headsEaten === 16) {
+      backgroundMusic.pause();
+      winSound.play();
       alert('Congratulations! You win!');
       resetGame();
       return;
@@ -127,7 +136,11 @@ function resetGame() {
   food = getRandomFoodPosition();
   headsEaten = 0;
   shuffleArray(faceIndices);
-}
+   if (!backgroundMusic.ended) {
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play();
+     }
+ }
 
 function renderSnake() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -173,6 +186,6 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.1.002";
+const versionHistory = "Version 1.1.003";
 document.getElementById('versionHistory').innerText = versionHistory;
 backgroundMusic.play();
