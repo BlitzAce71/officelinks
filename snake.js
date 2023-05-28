@@ -3,27 +3,8 @@ const ctx = canvas.getContext('2d');
 const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
-
+let startingX, startingY, direction;
 //starting movement logic
-
-do {
-  startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
-  startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
-
-  if (startingX < gridWidth / 2) {
-    if (startingY < gridHeight / 2) {
-      direction = Math.random() < 0.5 ? 'right' : 'down';
-    } else {
-      direction = Math.random() < 0.5 ? 'right' : 'up';
-    }
-  } else {
-    if (startingY < gridHeight / 2) {
-      direction = Math.random() < 0.5 ? 'left' : 'down';
-    } else {
-      direction = Math.random() < 0.5 ? 'left' : 'up';
-    }
-  }
-} while (checkInitialCollision(startingX, startingY, direction) || isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
 function checkInitialCollision(startingX, startingY, direction) {
   switch (direction) {
@@ -53,6 +34,25 @@ function isSelfCollision(x, y, direction) {
   }
   return false;
 }
+
+do {
+  startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
+  startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
+
+  if (startingX < gridWidth / 2) {
+    if (startingY < gridHeight / 2) {
+      direction = Math.random() < 0.5 ? 'right' : 'down';
+    } else {
+      direction = Math.random() < 0.5 ? 'right' : 'up';
+    }
+  } else {
+    if (startingY < gridHeight / 2) {
+      direction = Math.random() < 0.5 ? 'left' : 'down';
+    } else {
+      direction = Math.random() < 0.5 ? 'left' : 'up';
+    }
+  }
+} while (checkInitialCollision(startingX, startingY, direction) || isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
 function getNextHeadPosition(x, y, direction) {
   switch (direction) {
@@ -156,8 +156,6 @@ function checkSnakeCollision(head) {
   }
   return false;
 }
-
-let startingX, startingY, direction;
 
 function resetGame() {
   snake.length = 0;
