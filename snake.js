@@ -204,6 +204,31 @@ function handleKeyPress(event) {
   startMusic();
 }
 
+document.getElementById('controlImage').addEventListener('click', function(event) {
+    const rect = event.target.getBoundingClientRect();
+    const x = event.clientX - rect.left; //x position within the element
+    const y = event.clientY - rect.top;  //y position within the element
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+  
+    if (Math.abs(x - centerX) > Math.abs(y - centerY)) {
+        // The click was closer to the horizontal axis, so move left or right
+        if (x < centerX && direction !== 'right') {
+            direction = 'left';
+        } else if (x > centerX && direction !== 'left') {
+            direction = 'right';
+        }
+    } else {
+        // The click was closer to the vertical axis, so move up or down
+        if (y < centerY && direction !== 'down') {
+            direction = 'up';
+        } else if (y > centerY && direction !== 'up') {
+            direction = 'down';
+        }
+    }
+});
+
+
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
     // If the Enter key is pressed and the modal is being displayed, start a new game
@@ -217,5 +242,5 @@ resetGame();
 gameRunning = true; // Set gameRunning to true when starting the game
 gameLoop();
 
-const versionHistory = "Version 1.1.007";
+const versionHistory = "Version 1.1.008";
 document.getElementById('versionHistory').innerText = versionHistory;
