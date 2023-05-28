@@ -6,6 +6,10 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 //starting movement logic
 
+let startingX;
+let startingY;
+
+let direction;
 do {
   startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
   startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
@@ -63,24 +67,16 @@ function getNextHeadPosition(x, y, direction) {
   }
 }
 
+
+
+
+
+
 const snake = [
   { x: startingX, y: startingY },
+  { x: startingX-1, y: startingY },
+  { x: startingX-2, y: startingY }
 ];
-
-// Add the rest of the body based on the initial direction
-if (direction === 'left') {
-  snake.push({ x: startingX+1, y: startingY });
-  snake.push({ x: startingX+2, y: startingY });
-} else if (direction === 'right') {
-  snake.push({ x: startingX-1, y: startingY });
-  snake.push({ x: startingX-2, y: startingY });
-} else if (direction === 'up') {
-  snake.push({ x: startingX, y: startingY+1 });
-  snake.push({ x: startingX, y: startingY+2 });
-} else if (direction === 'down') {
-  snake.push({ x: startingX, y: startingY-1 });
-  snake.push({ x: startingX, y: startingY-2 });
-}
 
 let food = getRandomFoodPosition();
 let gameSpeed = 50;
@@ -157,46 +153,23 @@ function checkSnakeCollision(head) {
   return false;
 }
 
-let startingX, startingY, direction;
-
 function resetGame() {
   snake.length = 0;
-
-  do {
-    startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1;
-    startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
-    if (startingX < gridWidth / 2) {
-      if (startingY < gridHeight / 2) {
-        direction = Math.random() < 0.5 ? 'right' : 'down';
-      } else {
-        direction = Math.random() < 0.5 ? 'right' : 'up';
-      }
-    } else {
-      if (startingY < gridHeight / 2) {
-        direction = Math.random() < 0.5 ? 'left' : 'down';
-      } else {
-        direction = Math.random() < 0.5 ? 'left' : 'up';
-      }
-    }
-  } while (checkInitialCollision(startingX, startingY, direction));
-
-  // Body of the snake is set after determining the direction
-  snake.push({ x: startingX, y: startingY });
-
-  if (direction === 'left') {
-    snake.push({ x: startingX+1, y: startingY });
-    snake.push({ x: startingX+2, y: startingY });
-  } else if (direction === 'right') {
-    snake.push({ x: startingX-1, y: startingY });
-    snake.push({ x: startingX-2, y: startingY });
-  } else if (direction === 'up') {
-    snake.push({ x: startingX, y: startingY+1 });
-    snake.push({ x: startingX, y: startingY+2 });
-  } else if (direction === 'down') {
-    snake.push({ x: startingX, y: startingY-1 });
-    snake.push({ x: startingX, y: startingY-2 });
+  startingX = Math.floor(Math.random() * gridWidth);
+  startingY = Math.floor(Math.random() * gridHeight);
+  if (startingX < gridWidth / 2) {
+    direction = 'right';
+  } else {
+    direction = 'left';
   }
-
+  if (startingY < gridHeight / 2) {
+    direction = direction === 'right' ? 'down' : 'up';
+  } else {
+    direction = direction === 'right' ? 'up' : 'down';
+  }
+  snake.push({ x: startingX, y: startingY });
+  snake.push({ x: startingX-1, y: startingY });
+  snake.push({ x: startingX-2, y: startingY });
   food = getRandomFoodPosition();
   headsEaten = 0;
   shuffleArray(faceIndices);
