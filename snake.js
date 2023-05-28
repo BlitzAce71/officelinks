@@ -79,7 +79,7 @@ function updateSnake() {
   if (head.x === food.x && head.y === food.y) {
     food = getRandomFoodPosition();
     headsEaten++;
-    if (headsEaten === 15) {
+    if (headsEaten === 16) {
       alert('Congratulations! You win!');
       resetGame();
       return;
