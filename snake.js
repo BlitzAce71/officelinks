@@ -1,8 +1,13 @@
+const backgroundImage = new Image();
+backgroundImage.src = 'background.png';
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 50;
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
+const backgroundMusic = new Audio('backgroundMusic.mp3');
+backgroundMusic.loop = true; // The background music should loop
+const eatSound = new Audio('eatSound.mp3');
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
@@ -84,6 +89,7 @@ function updateSnake() {
       resetGame();
       return;
     }
+    eatSound.play();
   } else {
     snake.pop();
   }
@@ -125,7 +131,7 @@ function resetGame() {
 
 function renderSnake() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
    snake.forEach((segment, index) => {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
@@ -157,5 +163,6 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.001";
+const versionHistory = "Version 1.1.001";
 document.getElementById('versionHistory').innerText = versionHistory;
+backgroundMusic.play();
