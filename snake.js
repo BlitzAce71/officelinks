@@ -63,13 +63,13 @@ function updateSnake() {
   }
 
   if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
-    alert('Game Over');
+    alert('Game Over1');
     resetGame();
     return;
   }
 
   if (checkSnakeCollision(head)) {
-    alert('Game Over');
+    alert('Game Over1');
     resetGame();
     return;
   }
