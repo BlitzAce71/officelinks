@@ -21,19 +21,27 @@
       right: 0px;
       color: white;
       margin-top: 100px;
-    }
+	}
+	#foodRemaining {
+      color: black;
+	  font-size: 36px;
+	  position: absolute;
+      top: 640px;
+      right: 810px;
+	}
   </style>
 </head>
 <body>
 <div>
-  <canvas id="gameCanvas" width="800" height="800"></canvas>
-  <img id="controlImage" src="control.png" style="width: 200px; height: 200px; display: block; margin: 0 auto;" />
+  <canvas id="gameCanvas" width="720" height="720"></canvas>
+  <img id="controlImage" src="control.png" style="width: 180px; height: 180px; display: block; margin: 0 auto;" />
+  <p id="foodRemaining"></p>
   <p id="versionHistory"></p>
 </div>
 <div id="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
   <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 50%; text-align: center;">
     <p id="modalText"></p>
-    <button id="modalButton">Press ENTER to start new game</button>
+    <button id="modalButton">Click Here or Press ENTER to start a new game</button>
   </div>
 </div>
   <script src="snake.js"></script>

@@ -108,6 +108,7 @@ function updateSnake() {
     eatSound.play(); // Play eat sound
     food = getRandomFoodPosition(); // Get new food position
     headsEaten++;
+	document.getElementById('foodRemaining').innerText = 'Food Remaining: ' + (16 - headsEaten);
     
     // Check for win condition
     if (headsEaten === 16) {
@@ -162,6 +163,7 @@ function resetGame() {
   gameOverSound.currentTime = 0;
   winSound.pause();
   winSound.currentTime = 0;
+  document.getElementById('foodRemaining').innerText = 'Food Remaining: 16';
  }
 
 function renderSnake() {
@@ -242,5 +244,5 @@ resetGame();
 gameRunning = true; // Set gameRunning to true when starting the game
 gameLoop();
 
-const versionHistory = "Version 1.1.008";
+const versionHistory = "Version 1.1.009";
 document.getElementById('versionHistory').innerText = versionHistory;
