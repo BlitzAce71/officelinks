@@ -6,10 +6,6 @@ const gridHeight = Math.floor(canvas.height / gridSize);
 
 //starting movement logic
 
-let startingX;
-let startingY;
-
-let direction;
 do {
   startingX = Math.floor(Math.random() * (gridWidth - 2)) + 1; // Ensure a starting position away from the walls
   startingY = Math.floor(Math.random() * (gridHeight - 2)) + 1;
@@ -27,7 +23,7 @@ do {
       direction = Math.random() < 0.5 ? 'left' : 'up';
     }
   }
-} while (checkInitialCollision(startingX, startingY, direction));
+} while (checkInitialCollision(startingX, startingY, direction) || isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
 function checkInitialCollision(startingX, startingY, direction) {
   switch (direction) {
