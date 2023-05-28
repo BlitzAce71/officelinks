@@ -24,6 +24,9 @@ const snake = [
   { x: startingX-2, y: startingY }
 ];
 
+let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
+shuffleArray(faceIndices);
+
 let food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
 let gameSpeed = 50;
 let headsEaten = 0;
@@ -72,9 +75,6 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
-
-let faceIndices = Array.from({length: 17}, (_, i) => i + 1);
-shuffleArray(faceIndices);
 
 function updateSnake() {
   const head = { ...snake[0] }; // the new head segment
@@ -186,5 +186,5 @@ window.addEventListener('keydown', e => {
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.011 ";
+const versionHistory = "Version 1.0.012 ";
 document.getElementById('versionHistory').innerText = versionHistory;
