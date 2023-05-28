@@ -100,21 +100,24 @@ function checkSnakeCollision(head) {
 
 function resetGame() {
   snake.length = 0;
-  startingX = Math.floor(Math.random() * gridWidth);
-  startingY = Math.floor(Math.random() * gridHeight);
-  if (startingX < gridWidth / 2) {
+  startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
+  startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+
+  const randDirection = Math.random();
+  if (randDirection < 0.33) {
     direction = 'right';
+    snake.push({ x: startingX-1, y: startingY });
+    snake.push({ x: startingX-2, y: startingY });
+  } else if (randDirection < 0.66) {
+    direction = 'up';
+    snake.push({ x: startingX, y: startingY+1 });
+    snake.push({ x: startingX, y: startingY+2 });
   } else {
-    direction = 'left';
+    direction = 'down';
+    snake.push({ x: startingX, y: startingY-1 });
+    snake.push({ x: startingX, y: startingY-2 });
   }
-  if (startingY < gridHeight / 2) {
-    direction = direction === 'right' ? 'down' : 'up';
-  } else {
-    direction = direction === 'right' ? 'up' : 'down';
-  }
-  snake.push({ x: startingX, y: startingY });
-  snake.push({ x: startingX-1, y: startingY });
-  snake.push({ x: startingX-2, y: startingY });
+
   food = getRandomFoodPosition();
   headsEaten = 0;
   shuffleArray(faceIndices);
