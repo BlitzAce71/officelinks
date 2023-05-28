@@ -1,0 +1,14 @@
+still to do:
+
+win countdown (Food Remaining: x)
+
+phone/click controls (a central circle below the game, clicking above/below/to the side of it for input)
+
+speed prompt
+
+themes: prompt at the beginning to choose different snake image, food image, background, and sound effects
+
+consider obstacles
+
+put files in a directory
+
