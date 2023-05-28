@@ -147,16 +147,21 @@ function resetGame() {
   snake.length = 0;
   startingX = Math.floor(Math.random() * gridWidth);
   startingY = Math.floor(Math.random() * gridHeight);
+  
   if (startingX < gridWidth / 2) {
-    direction = 'right';
+    if (startingY < gridHeight / 2) {
+      direction = startingX < startingY ? 'right' : 'down';
+    } else {
+      direction = startingX < (gridHeight - startingY) ? 'right' : 'up';
+    }
   } else {
-    direction = 'left';
+    if (startingY < gridHeight / 2) {
+      direction = (gridWidth - startingX) < startingY ? 'left' : 'down';
+    } else {
+      direction = (gridWidth - startingX) < (gridHeight - startingY) ? 'left' : 'up';
+    }
   }
-  if (startingY < gridHeight / 2) {
-    direction = direction === 'right' ? 'down' : 'up';
-  } else {
-    direction = direction === 'right' ? 'up' : 'down';
-  }
+  
   snake.push({ x: startingX, y: startingY });
   snake.push({ x: startingX-1, y: startingY });
   snake.push({ x: startingX-2, y: startingY });
@@ -164,6 +169,7 @@ function resetGame() {
   headsEaten = 0;
   shuffleArray(faceIndices);
 }
+
 
 function renderSnake() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
