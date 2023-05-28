@@ -24,7 +24,7 @@ const snake = [
   { x: startingX-2, y: startingY }
 ];
 
-let food = getRandomFoodPosition();
+let food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
 let gameSpeed = 50;
 let headsEaten = 0;
 
@@ -128,7 +128,6 @@ function checkSnakeCollision(position, includeHead = true) {
 
 function resetGame() {
   snake.length = 0;
-  snakeFaces = [1, 2, 3]; // Reset the face indices
 
   startingX = Math.floor(gridWidth / 2);
   startingY = Math.floor(gridHeight / 2);
@@ -136,19 +135,22 @@ function resetGame() {
   const randDirection = Math.random();
   if (randDirection < 0.33) {
     direction = 'right';
-    snake.push({ x: startingX, y: startingY }); // Add snake head first
+    snake.push({ x: startingX, y: startingY });
     snake.push({ x: startingX-1, y: startingY });
     snake.push({ x: startingX-2, y: startingY });
+    snakeFaces = [1, 2, 3];
   } else if (randDirection < 0.66) {
     direction = 'up';
-    snake.push({ x: startingX, y: startingY }); // Add snake head first
+    snake.push({ x: startingX, y: startingY });
     snake.push({ x: startingX, y: startingY+1 });
     snake.push({ x: startingX, y: startingY+2 });
+    snakeFaces = [2, 3, 4];
   } else {
     direction = 'down';
-    snake.push({ x: startingX, y: startingY }); // Add snake head first
+    snake.push({ x: startingX, y: startingY });
     snake.push({ x: startingX, y: startingY-1 });
     snake.push({ x: startingX, y: startingY-2 });
+    snakeFaces = [3, 4, 5];
   }
 
   food = { position: getRandomFoodPosition(), faceIndex: getFaceIndex() };
@@ -172,8 +174,17 @@ function renderSnake() {
   ctx.drawImage(foodImage, food.position.x * gridSize, food.position.y * gridSize, gridSize, gridSize);
 }
 
+window.addEventListener('keydown', e => {
+  switch (e.key) {
+    case 'ArrowUp':    direction = 'up'; break;
+    case 'ArrowDown':  direction = 'down'; break;
+    case 'ArrowLeft':  direction = 'left'; break;
+    case 'ArrowRight': direction = 'right'; break;
+  }
+});
+
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.010 ";
+const versionHistory = "Version 1.0.011 ";
 document.getElementById('versionHistory').innerText = versionHistory;
