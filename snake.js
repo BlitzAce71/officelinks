@@ -109,6 +109,7 @@ function updateSnake() {
     }
   } else {
     snake.pop();
+    faceIndices.pop(); // remove the last face index when the snake's tail is removed
   }
 }
 
@@ -123,20 +124,25 @@ function checkSnakeCollision(position, includeHead = true) {
 
 function resetGame() {
   snake.length = 0;
-  startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
-  startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+  faceIndices = [1, 2, 3]; // Reset the face indices
+
+  startingX = Math.floor(gridWidth / 2);
+  startingY = Math.floor(gridHeight / 2);
 
   const randDirection = Math.random();
   if (randDirection < 0.33) {
     direction = 'right';
+    snake.push({ x: startingX, y: startingY }); // Add snake head first
     snake.push({ x: startingX-1, y: startingY });
     snake.push({ x: startingX-2, y: startingY });
   } else if (randDirection < 0.66) {
     direction = 'up';
+    snake.push({ x: startingX, y: startingY }); // Add snake head first
     snake.push({ x: startingX, y: startingY+1 });
     snake.push({ x: startingX, y: startingY+2 });
   } else {
     direction = 'down';
+    snake.push({ x: startingX, y: startingY }); // Add snake head first
     snake.push({ x: startingX, y: startingY-1 });
     snake.push({ x: startingX, y: startingY-2 });
   }
@@ -180,5 +186,5 @@ document.addEventListener('keydown', handleKeyPress);
 resetGame();
 gameLoop();
 
-const versionHistory = "Version 1.0.003 ";
+const versionHistory = "Version 1.0.009 ";
 document.getElementById('versionHistory').innerText = versionHistory;
