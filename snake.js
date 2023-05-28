@@ -10,11 +10,10 @@ backgroundMusic.loop = true; // The background music should loop
 const eatSound = new Audio('eatSound.mp3');
 const gameOverSound = new Audio('lose.mp3');
 const winSound = new Audio('win.mp3');
-
+let gameRunning = false;
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
-
 let direction;
 const randDirection = Math.random();
 if (randDirection < 0.33) {
@@ -64,11 +63,13 @@ shuffleArray(faceIndices);
 function showModal(text) {
   document.getElementById('modalText').innerText = text;
   document.getElementById('modal').style.display = 'block';
+  gameRunning = false; // Set gameRunning to false when showing the modal
 }
 
 document.getElementById('modalButton').addEventListener('click', function() {
   document.getElementById('modal').style.display = 'none';
   resetGame();
+  gameRunning = true; // Set gameRunning to true when starting a new game
 });
 
 function updateSnake() {
@@ -184,6 +185,7 @@ function startMusic() {
 }
 
 function handleKeyPress(event) {
+  if (!gameRunning) return; // Ignore key presses when game is not running
   const key = event.key;
   if (key === 'ArrowUp' && direction !== 'down') {
     direction = 'up';
@@ -197,10 +199,18 @@ function handleKeyPress(event) {
   startMusic();
 }
 
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
+    // If the Enter key is pressed and the modal is being displayed, start a new game
+    document.getElementById('modalButton').click();
+  }
+});
+
 document.addEventListener('keydown', handleKeyPress);
 
 resetGame();
+gameRunning = true; // Set gameRunning to true when starting the game
 gameLoop();
 
-const versionHistory = "Version 1.1.005";
+const versionHistory = "Version 1.1.006";
 document.getElementById('versionHistory').innerText = versionHistory;
