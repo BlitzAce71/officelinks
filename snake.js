@@ -16,16 +16,26 @@ do {
 
   if (startingX < gridWidth / 2) {
     if (startingY < gridHeight / 2) {
-      direction = Math.random() < 0.5 ? 'right' : 'down';
+      direction = startingX < startingY ? 'right' : 'down';
     } else {
-      direction = Math.random() < 0.5 ? 'right' : 'up';
+      direction = startingX < (gridHeight - startingY) ? 'right' : 'up';
     }
   } else {
     if (startingY < gridHeight / 2) {
-      direction = Math.random() < 0.5 ? 'left' : 'down';
+      direction = (gridWidth - startingX) < startingY ? 'left' : 'down';
     } else {
-      direction = Math.random() < 0.5 ? 'left' : 'up';
+      direction = (gridWidth - startingX) < (gridHeight - startingY) ? 'left' : 'up';
     }
+  }
+} while (checkInitialCollision(startingX, startingY, direction));
+
+function checkInitialCollision(startingX, startingY, direction) {
+  switch (direction) {
+    case 'up': return startingY === 0;
+    case 'down': return startingY === gridHeight - 1;
+    case 'left': return startingX === 0;
+    case 'right': return startingX === gridWidth - 1;
+    default: return false;
   }
 } while (isWallCollision(startingX, startingY, direction) || isSelfCollision(startingX, startingY, direction));
 
@@ -124,7 +134,7 @@ function updateSnake() {
   if (head.x === food.x && head.y === food.y) {
     food = getRandomFoodPosition();
     headsEaten++;
-    if (headsEaten === 18) {
+    if (headsEaten === 15) {
       alert('Congratulations! You win!');
       resetGame();
       return;
