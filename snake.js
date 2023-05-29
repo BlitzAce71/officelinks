@@ -1,5 +1,5 @@
 let theme = 'default';
-
+let directionChangeLock = false;
 function getSoundFilePath(soundName) {
   return theme + '/' + soundName + '.mp3';
 }
@@ -137,9 +137,13 @@ function showModal(text) {
 }
 
 
-
+let directionQueue = [];
 
 function updateSnake() {
+  if (directionQueue.length > 0) {
+    direction = directionQueue.shift();
+  }
+
   const head = { ...snake[0] }; // Copy of the head object
   switch (direction) {
     case 'up':    head.y -= 1; break;
@@ -256,15 +260,46 @@ function startMusic() {
 function handleKeyPress(event) {
   if (!gameRunning) return; // Ignore key presses when game is not running
   const key = event.key;
+  let newDirection = null;
   if (key === 'ArrowUp' && direction !== 'down') {
-    direction = 'up';
+    newDirection = 'up';
   } else if (key === 'ArrowDown' && direction !== 'up') {
-    direction = 'down';
+    newDirection = 'down';
   } else if (key === 'ArrowLeft' && direction !== 'right') {
-    direction = 'left';
+    newDirection = 'left';
   } else if (key === 'ArrowRight' && direction !== 'left') {
-    direction = 'right';
+    newDirection = 'right';
   }
+
+  if (newDirection) {
+    if (directionQueue.length > 0) {
+      // Check if the last queued direction is opposite to the new direction
+      const lastQueuedDirection = directionQueue[directionQueue.length - 1];
+      if ((newDirection === 'up' && lastQueuedDirection === 'down') ||
+          (newDirection === 'down' && lastQueuedDirection === 'up') ||
+          (newDirection === 'left' && lastQueuedDirection === 'right') ||
+          (newDirection === 'right' && lastQueuedDirection === 'left')) {
+        // If so, replace it with the new direction to prevent self-collision
+        directionQueue[directionQueue.length - 1] = newDirection;
+      } else {
+        // Otherwise, add the new direction to the queue
+        directionQueue.push(newDirection);
+      }
+    } else {
+      // If the queue is empty, check if the new direction is opposite to the current direction
+      if ((newDirection === 'up' && direction === 'down') ||
+          (newDirection === 'down' && direction === 'up') ||
+          (newDirection === 'left' && direction === 'right') ||
+          (newDirection === 'right' && direction === 'left')) {
+        // If so, ignore it to prevent self-collision
+        return;
+      } else {
+        // Otherwise, add the new direction to the queue
+        directionQueue.push(newDirection);
+      }
+    }
+  }
+
   startMusic();
 }
 
@@ -376,5 +411,5 @@ document.addEventListener('keydown', handleKeyPress);
 // start the game using the modal instead of immediately
 showModal('Welcome to Office Slinks!');
 
-const versionHistory = "Version 1.2.002";
+const versionHistory = "Version 1.2.003";
 document.getElementById('versionHistory').innerText = versionHistory;
