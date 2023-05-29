@@ -1,9 +1,7 @@
 still to do:
 
-speed prompt
-
-themes: prompt at the beginning to choose different snake image, food image, background, and sound effects
-
 consider obstacles
 
-put files in a directory
+more themes
+
+parent game selector
