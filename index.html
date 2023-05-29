@@ -3,13 +3,25 @@
 <head>
   <title>Office Slinks</title>
   <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #000;
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* change from center to flex-start */
+  height: 100vh;
+  background-color: #000;
+}
+
+#gameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px; /* add some padding at the top */
+}
+
     }
     canvas {
       border: 1px solid black;
@@ -21,20 +33,17 @@
       right: 0px;
       color: white;
       margin-top: 100px;
-	}
-	#foodRemaining {
-      color: black;
-	  font-size: 36px;
-	  position: absolute;
-      top: 640px;
-      right: 810px;
-	}
+    }
+    #foodRemaining {
+      color: white;
+      font-size: 24px;
+      margin-top: 20px; // add some space between the canvas and the text
+    }
   </style>
 </head>
 <body>
-<div>
+<div id="gameContainer">
   <canvas id="gameCanvas" width="720" height="720"></canvas>
-  <img id="controlImage" src="control.png" style="width: 180px; height: 180px; display: block; margin: 0 auto;" />
   <p id="foodRemaining"></p>
   <p id="versionHistory"></p>
 </div>

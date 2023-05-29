@@ -1,10 +1,13 @@
 const backgroundImage = new Image();
 backgroundImage.src = 'background.png';
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const gridSize = 50;
+let gridSize = Math.min(Math.floor(window.innerWidth / 24), Math.floor(window.innerHeight / 24));
+if (gridSize > 50) gridSize = 50; // Limit the grid size for large screens
+canvas.width = gridSize * 20; // 20 cells wide
+canvas.height = gridSize * 20; // 20 cells high
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
+const ctx = canvas.getContext('2d');
 const backgroundMusic = new Audio('backgroundMusic.mp3');
 backgroundMusic.loop = true; // The background music should loop
 const eatSound = new Audio('eatSound.mp3');
@@ -206,13 +209,58 @@ function handleKeyPress(event) {
   startMusic();
 }
 
-document.getElementById('controlImage').addEventListener('click', function(event) {
+let touchStartX = null;
+let touchStartY = null;
+
+canvas.addEventListener('touchstart', function(event) {
+  touchStartX = event.changedTouches[0].clientX;
+  touchStartY = event.changedTouches[0].clientY;
+});
+
+canvas.addEventListener('touchend', function(event) {
+  if (!touchStartX || !touchStartY) return;
+  let dx = event.changedTouches[0].clientX - touchStartX;
+  let dy = event.changedTouches[0].clientY - touchStartY;
+  let absX = Math.abs(dx);
+  let absY = Math.abs(dy);
+
+  if (Math.max(absX, absY) > 10) { // If the swipe distance is less than 10px, ignore it
+    if (absX > absY) {
+      if (dx > 0 && direction !== 'left') {
+        direction = 'right';
+      } else if (dx < 0 && direction !== 'right') {
+        direction = 'left';
+      }
+    } else {
+      if (dy > 0 && direction !== 'up') {
+        direction = 'down';
+      } else if (dy < 0 && direction !== 'down') {
+        direction = 'up';
+      }
+    }
+  }
+
+  touchStartX = null;
+  touchStartY = null;
+});
+
+window.addEventListener('keydown', function(e) {
+  if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+  }
+});
+
+canvas.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+});
+
+canvas.addEventListener('click', function(event) {
     const rect = event.target.getBoundingClientRect();
     const x = event.clientX - rect.left; //x position within the element
     const y = event.clientY - rect.top;  //y position within the element
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-  
+
     if (Math.abs(x - centerX) > Math.abs(y - centerY)) {
         // The click was closer to the horizontal axis, so move left or right
         if (x < centerX && direction !== 'right') {
@@ -230,7 +278,6 @@ document.getElementById('controlImage').addEventListener('click', function(event
     }
 });
 
-
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
     // If the Enter key is pressed and the modal is being displayed, start a new game
@@ -244,5 +291,5 @@ resetGame();
 gameRunning = true; // Set gameRunning to true when starting the game
 gameLoop();
 
-const versionHistory = "Version 1.1.009";
+const versionHistory = "Version 1.1.010";
 document.getElementById('versionHistory').innerText = versionHistory;
