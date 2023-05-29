@@ -377,5 +377,5 @@ document.addEventListener('keydown', handleKeyPress);
 // start the game using the modal instead of immediately
 showModal('Welcome to Office Slinks!');
 
-const versionHistory = "Version 1.1.014";
+const versionHistory = "Version 1.2.001";
 document.getElementById('versionHistory').innerText = versionHistory;
