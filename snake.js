@@ -38,13 +38,6 @@ let food = getRandomFoodPosition();
 
 let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-if (isMobile) {
-    gameSpeed = 200; // Adjust to the speed you want for mobile
-} else {
-    gameSpeed = 50; // Adjust to the speed you want for desktop
-}
-
-
 let headsEaten = 0;
 
 function getRandomFoodPosition() {
@@ -55,12 +48,14 @@ function getRandomFoodPosition() {
 }
 
 function gameLoop() {
+  if (!isGameOver) {
+    updateSnake();
+    renderSnake();
+  }
   setTimeout(() => {
     if (!isGameOver) {
-      updateSnake();
-      renderSnake();
+      requestAnimationFrame(gameLoop);
     }
-    requestAnimationFrame(gameLoop);
   }, gameSpeed);
 }
 
@@ -82,11 +77,8 @@ function showModal(text) {
   isGameOver = true; // Set isGameOver to true
 }
 
-document.getElementById('modalButton').addEventListener('click', function() {
-  document.getElementById('modal').style.display = 'none';
-  resetGame();
-  gameRunning = true; // Set gameRunning to true when starting a new game
-});
+
+
 
 function updateSnake() {
   const head = { ...snake[0] }; // Copy of the head object
@@ -288,6 +280,33 @@ canvas.addEventListener('click', function(event) {
     }
 });
 
+const INITIAL_GAME_SPEED = 100;
+
+// In your event listener for the modalButton
+document.getElementById('modalButton').addEventListener('click', function() {
+  let difficultyMultiplier;
+
+  switch (document.getElementById('difficultySelect').value) {
+    case 'easy': difficultyMultiplier = 1.0; break;
+    case 'medium': difficultyMultiplier = 0.75; break;
+    case 'hard': difficultyMultiplier = 0.5; break;
+    default: difficultyMultiplier = 1.0; break; // Default to 'easy'
+  }
+
+  gameSpeed = INITIAL_GAME_SPEED * difficultyMultiplier; // Adjust to the speed you want based on difficulty
+  if (isMobile) {
+    gameSpeed *= 2; // Make the game speed twice as large on mobile
+  }
+
+  document.getElementById('modal').style.display = 'none';
+  resetGame();
+  gameRunning = true; // Set gameRunning to true when starting a new game
+
+  // Start the game loop
+  gameLoop();
+});
+
+
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
     // If the Enter key is pressed and the modal is being displayed, start a new game
@@ -297,9 +316,8 @@ document.addEventListener('keydown', function(event) {
 
 document.addEventListener('keydown', handleKeyPress);
 
-resetGame();
-gameRunning = true; // Set gameRunning to true when starting the game
-gameLoop();
+// start the game using the modal instead of immediately
+showModal('Welcome to Office Slinks! Please select a difficulty to start the game.');
 
-const versionHistory = "Version 1.1.011";
+const versionHistory = "Version 1.1.013";
 document.getElementById('versionHistory').innerText = versionHistory;

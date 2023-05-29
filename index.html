@@ -51,9 +51,16 @@ body {
 <div id="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
   <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 50%; text-align: center;">
     <p id="modalText"></p>
+    <p>Choose a difficulty:</p>
+    <select id="difficultySelect">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
     <button id="modalButton">Click Here or Press ENTER to start a new game</button>
   </div>
 </div>
+
   <script src="snake.js"></script>
 </body>
 </html>
