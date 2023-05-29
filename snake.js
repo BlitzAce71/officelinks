@@ -1,5 +1,68 @@
+let theme = 'default';
+
+function getSoundFilePath(soundName) {
+  return theme + '/' + soundName + '.mp3';
+}
+function playSound(soundName) {
+  let audio = new Audio(getSoundFilePath(soundName));
+  audio.play();
+}
+let sounds = {};
+
+function getSound(soundName) {
+  if (!sounds[soundName]) {
+    sounds[soundName] = new Audio(getSoundFilePath(soundName));
+  }
+  return sounds[soundName];
+}
+
+function playSound(soundName) {
+  getSound(soundName).play();
+}
+
+function stopSound(soundName) {
+  let sound = getSound(soundName);
+  sound.pause();
+  sound.currentTime = 0;
+}
+
 const backgroundImage = new Image();
-backgroundImage.src = 'background.png';
+const backgroundMusic = new Audio();
+backgroundMusic.loop = true; // The background music should loop
+const eatSound = new Audio();
+const gameOverSound = new Audio();
+const winSound = new Audio();
+// Get the theme select element from the DOM
+const themeSelect = document.getElementById('themeSelect');
+
+// Add an event listener to the theme select element
+themeSelect.addEventListener('change', function(event) {
+  // Update the theme variable with the selected value
+  theme = event.target.value;
+
+  backgroundMusic.src = theme + '/backgroundMusic.mp3';
+  backgroundMusic.load();
+
+  eatSound.src = theme + '/eatSound.mp3';
+  eatSound.load();
+
+  gameOverSound.src = theme + '/lose.mp3';
+  gameOverSound.load();
+
+  winSound.src = theme + '/win.mp3';
+  winSound.load();
+
+  backgroundImage.src = theme + '/background.png';
+  backgroundImage.load();
+});
+
+// This part is set to default theme
+backgroundImage.src = theme + '/background.png';
+backgroundMusic.src = theme + '/backgroundMusic.mp3';
+eatSound.src = theme + '/eatSound.mp3';
+gameOverSound.src = theme + '/lose.mp3';
+winSound.src = theme + '/win.mp3';
+
 const canvas = document.getElementById('gameCanvas');
 let gridSize = Math.min(Math.floor(window.innerWidth / 24), Math.floor(window.innerHeight / 24));
 if (gridSize > 50) gridSize = 50; // Limit the grid size for large screens
@@ -8,13 +71,9 @@ canvas.height = gridSize * 20; // 20 cells high
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 const ctx = canvas.getContext('2d');
-const backgroundMusic = new Audio('backgroundMusic.mp3');
-backgroundMusic.loop = true; // The background music should loop
-const eatSound = new Audio('eatSound.mp3');
-const gameOverSound = new Audio('lose.mp3');
-const winSound = new Audio('win.mp3');
 let gameRunning = false;
 let isGameOver = false;
+
 
 let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
 let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
@@ -27,6 +86,7 @@ if (randDirection < 0.33) {
 } else {
   direction = 'down';
 }
+
 
 const snake = [
   { x: startingX, y: startingY },
@@ -92,7 +152,7 @@ function updateSnake() {
   // Check for collision with wall
   if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
     backgroundMusic.pause();
-    gameOverSound.play();
+    playSound('lose');
     showModal('Game Over');
     return;
   }
@@ -100,7 +160,7 @@ function updateSnake() {
   // Check for collision with self
   if (checkSnakeCollision(head)) {
     backgroundMusic.pause();
-    gameOverSound.play();
+    playSound('lose');
     showModal('Game Over');
     return;
   }
@@ -109,15 +169,15 @@ function updateSnake() {
 
   // Check if head is on the food
   if (head.x === food.x && head.y === food.y) {
-    eatSound.play(); // Play eat sound
+    playSound('eatSound'); // Play eat sound
     food = getRandomFoodPosition(); // Get new food position
     headsEaten++;
-	document.getElementById('foodRemaining').innerText = '#munchies Remaining: ' + (16 - headsEaten);
+	document.getElementById('foodRemaining').innerText = 'Remaining: ' + (16 - headsEaten);
     
     // Check for win condition
     if (headsEaten === 16) {
       backgroundMusic.pause();
-      winSound.play();
+      playSound('win');
       showModal('Congratulations! You win!');
       return;
     }
@@ -155,7 +215,7 @@ function resetGame() {
     snake.push({ x: startingX, y: startingY-1 });
     snake.push({ x: startingX, y: startingY-2 });
   }
-
+	snake.unshift({ x: startingX, y: startingY });
   food = getRandomFoodPosition();
   headsEaten = 0;
   shuffleArray(faceIndices);
@@ -163,11 +223,10 @@ function resetGame() {
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();
      }
-  gameOverSound.pause();
-  gameOverSound.currentTime = 0;
-  winSound.pause();
-  winSound.currentTime = 0;
-  document.getElementById('foodRemaining').innerText = 'Food Remaining: 16';
+	   // stop win and lose sounds
+  stopSound('win');
+  stopSound('lose');
+   document.getElementById('foodRemaining').innerText = 'Food Remaining: 16';
  }
 
 function renderSnake() {
@@ -177,12 +236,12 @@ function renderSnake() {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const image = new Image();
-    image.src = 'face' + faceIndices[index % 17] + '.png';
+    image.src = theme + '/face' + faceIndices[index % 17] + '.png';
     ctx.drawImage(image, x, y, gridSize, gridSize);
   });
 
   const foodImage = new Image();
-  foodImage.src = 'food.png';
+  foodImage.src = theme + '/food.png';
   ctx.drawImage(foodImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
 
@@ -306,7 +365,6 @@ document.getElementById('modalButton').addEventListener('click', function() {
   gameLoop();
 });
 
-
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
     // If the Enter key is pressed and the modal is being displayed, start a new game
@@ -317,7 +375,7 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('keydown', handleKeyPress);
 
 // start the game using the modal instead of immediately
-showModal('Welcome to Office Slinks! Please select a difficulty to start the game.');
+showModal('Welcome to Office Slinks!');
 
-const versionHistory = "Version 1.1.013";
+const versionHistory = "Version 1.1.014";
 document.getElementById('versionHistory').innerText = versionHistory;
