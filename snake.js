@@ -112,7 +112,7 @@ function updateSnake() {
     eatSound.play(); // Play eat sound
     food = getRandomFoodPosition(); // Get new food position
     headsEaten++;
-	document.getElementById('foodRemaining').innerText = 'Food Remaining: ' + (16 - headsEaten);
+	document.getElementById('foodRemaining').innerText = '#munchies Remaining: ' + (16 - headsEaten);
     
     // Check for win condition
     if (headsEaten === 16) {
