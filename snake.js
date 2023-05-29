@@ -295,7 +295,7 @@ document.getElementById('modalButton').addEventListener('click', function() {
 
   gameSpeed = INITIAL_GAME_SPEED * difficultyMultiplier; // Adjust to the speed you want based on difficulty
   if (isMobile) {
-    gameSpeed *= 2; // Make the game speed twice as large on mobile
+    gameSpeed *= 1.5; // Make the game speed easier on mobile
   }
 
   document.getElementById('modal').style.display = 'none';
