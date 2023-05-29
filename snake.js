@@ -35,7 +35,16 @@ const snake = [
 ];
 
 let food = getRandomFoodPosition();
-let gameSpeed = 50;
+
+let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+if (isMobile) {
+    gameSpeed = 200; // Adjust to the speed you want for mobile
+} else {
+    gameSpeed = 50; // Adjust to the speed you want for desktop
+}
+
+
 let headsEaten = 0;
 
 function getRandomFoodPosition() {
@@ -212,12 +221,12 @@ function handleKeyPress(event) {
 let touchStartX = null;
 let touchStartY = null;
 
-canvas.addEventListener('touchstart', function(event) {
+document.body.addEventListener('touchstart', function(event) {
   touchStartX = event.changedTouches[0].clientX;
   touchStartY = event.changedTouches[0].clientY;
 });
 
-canvas.addEventListener('touchend', function(event) {
+document.body.addEventListener('touchend', function(event) {
   if (!touchStartX || !touchStartY) return;
   let dx = event.changedTouches[0].clientX - touchStartX;
   let dy = event.changedTouches[0].clientY - touchStartY;
@@ -243,6 +252,7 @@ canvas.addEventListener('touchend', function(event) {
   touchStartX = null;
   touchStartY = null;
 });
+
 
 window.addEventListener('keydown', function(e) {
   if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -291,5 +301,5 @@ resetGame();
 gameRunning = true; // Set gameRunning to true when starting the game
 gameLoop();
 
-const versionHistory = "Version 1.1.010";
+const versionHistory = "Version 1.1.011";
 document.getElementById('versionHistory').innerText = versionHistory;
