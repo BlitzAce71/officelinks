@@ -3,10 +3,7 @@ let theme = 'default';
 function getSoundFilePath(soundName) {
   return theme + '/' + soundName + '.mp3';
 }
-function playSound(soundName) {
-  let audio = new Audio(getSoundFilePath(soundName));
-  audio.play();
-}
+
 let sounds = {};
 
 function getSound(soundName) {
@@ -27,11 +24,11 @@ function stopSound(soundName) {
 }
 
 const backgroundImage = new Image();
-const backgroundMusic = new Audio();
+const backgroundMusic = getSound('backgroundMusic');
 backgroundMusic.loop = true; // The background music should loop
-const eatSound = new Audio();
-const gameOverSound = new Audio();
-const winSound = new Audio();
+const eatSound = getSound('eatSound');
+const gameOverSound = getSound('lose');
+const winSound = getSound('win');
 // Get the theme select element from the DOM
 const themeSelect = document.getElementById('themeSelect');
 
@@ -40,20 +37,22 @@ themeSelect.addEventListener('change', function(event) {
   // Update the theme variable with the selected value
   theme = event.target.value;
 
-  backgroundMusic.src = theme + '/backgroundMusic.mp3';
-  backgroundMusic.load();
+  sounds['backgroundMusic'].src = theme + '/backgroundMusic.mp3';
+  sounds['backgroundMusic'].load();
 
-  eatSound.src = theme + '/eatSound.mp3';
-  eatSound.load();
+  sounds['eatSound'].src = theme + '/eatSound.mp3';
+  sounds['eatSound'].load();
 
-  gameOverSound.src = theme + '/lose.mp3';
-  gameOverSound.load();
+  sounds['lose'].src = theme + '/lose.mp3';
+  sounds['lose'].load();
 
-  winSound.src = theme + '/win.mp3';
-  winSound.load();
+  sounds['win'].src = theme + '/win.mp3';
+  sounds['win'].load();
 
   backgroundImage.src = theme + '/background.png';
-  backgroundImage.load();
+  backgroundImage.onload = function() {
+    renderSnake();
+  };
 });
 
 // This part is set to default theme
@@ -377,5 +376,5 @@ document.addEventListener('keydown', handleKeyPress);
 // start the game using the modal instead of immediately
 showModal('Welcome to Office Slinks!');
 
-const versionHistory = "Version 1.2.001";
+const versionHistory = "Version 1.2.002";
 document.getElementById('versionHistory').innerText = versionHistory;
