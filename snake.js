@@ -1,5 +1,6 @@
 let theme = 'default';
 let directionChangeLock = false;
+let gameLoopTimeout;
 function getSoundFilePath(soundName) {
   return theme + '/' + soundName + '.mp3';
 }
@@ -25,16 +26,14 @@ function stopSound(soundName) {
 
 const backgroundImage = new Image();
 const backgroundMusic = getSound('backgroundMusic');
-backgroundMusic.loop = true; // The background music should loop
+backgroundMusic.loop = true;
 const eatSound = getSound('eatSound');
 const gameOverSound = getSound('lose');
 const winSound = getSound('win');
-// Get the theme select element from the DOM
 const themeSelect = document.getElementById('themeSelect');
 
-// Add an event listener to the theme select element
+
 themeSelect.addEventListener('change', function(event) {
-  // Update the theme variable with the selected value
   theme = event.target.value;
 
   sounds['backgroundMusic'].src = theme + '/backgroundMusic.mp3';
@@ -55,7 +54,6 @@ themeSelect.addEventListener('change', function(event) {
   };
 });
 
-// This part is set to default theme
 backgroundImage.src = theme + '/background.png';
 backgroundMusic.src = theme + '/backgroundMusic.mp3';
 eatSound.src = theme + '/eatSound.mp3';
@@ -64,9 +62,9 @@ winSound.src = theme + '/win.mp3';
 
 const canvas = document.getElementById('gameCanvas');
 let gridSize = Math.min(Math.floor(window.innerWidth / 24), Math.floor(window.innerHeight / 24));
-if (gridSize > 50) gridSize = 50; // Limit the grid size for large screens
-canvas.width = gridSize * 20; // 20 cells wide
-canvas.height = gridSize * 20; // 20 cells high
+if (gridSize > 50) gridSize = 50;
+canvas.width = gridSize * 20; 
+canvas.height = gridSize * 20; 
 const gridWidth = Math.floor(canvas.width / gridSize);
 const gridHeight = Math.floor(canvas.height / gridSize);
 const ctx = canvas.getContext('2d');
@@ -74,8 +72,8 @@ let gameRunning = false;
 let isGameOver = false;
 
 
-let startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
-let startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+let startingX = Math.floor(gridWidth / 2);
+let startingY = Math.floor(gridHeight / 2);
 let direction;
 const randDirection = Math.random();
 if (randDirection < 0.33) {
@@ -100,10 +98,16 @@ let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 let headsEaten = 0;
 
 function getRandomFoodPosition() {
-  return {
-    x: Math.floor(Math.random() * gridWidth),
-    y: Math.floor(Math.random() * gridHeight)
-  };
+  let position;
+
+  while (position == null || checkSnakeCollision(position)) {
+    position = {
+      x: Math.floor(Math.random() * gridWidth),
+      y: Math.floor(Math.random() * gridHeight)
+    };
+  }
+
+  return position;
 }
 
 function gameLoop() {
@@ -111,14 +115,13 @@ function gameLoop() {
     updateSnake();
     renderSnake();
   }
-  setTimeout(() => {
+  gameLoopTimeout = setTimeout(() => {
     if (!isGameOver) {
       requestAnimationFrame(gameLoop);
     }
   }, gameSpeed);
 }
 
-// Shuffle array function
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -132,8 +135,8 @@ shuffleArray(faceIndices);
 function showModal(text) {
   document.getElementById('modalText').innerText = text;
   document.getElementById('modal').style.display = 'block';
-  gameRunning = false; // Set gameRunning to false when showing the modal
-  isGameOver = true; // Set isGameOver to true
+  gameRunning = false; 
+  isGameOver = true; 
 }
 
 
@@ -144,7 +147,7 @@ function updateSnake() {
     direction = directionQueue.shift();
   }
 
-  const head = { ...snake[0] }; // Copy of the head object
+  const head = { ...snake[0] }; 
   switch (direction) {
     case 'up':    head.y -= 1; break;
     case 'down':  head.y += 1; break;
@@ -152,7 +155,6 @@ function updateSnake() {
     case 'right': head.x += 1; break;
   }
 
-  // Check for collision with wall
   if (head.x < 0 || head.x > gridWidth - 1 || head.y < 0 || head.y > gridHeight - 1) {
     backgroundMusic.pause();
     playSound('lose');
@@ -160,7 +162,6 @@ function updateSnake() {
     return;
   }
 
-  // Check for collision with self
   if (checkSnakeCollision(head)) {
     backgroundMusic.pause();
     playSound('lose');
@@ -168,24 +169,22 @@ function updateSnake() {
     return;
   }
 
-  snake.unshift(head); // Add new head to snake
+  snake.unshift(head);
 
-  // Check if head is on the food
   if (head.x === food.x && head.y === food.y) {
-    playSound('eatSound'); // Play eat sound
-    food = getRandomFoodPosition(); // Get new food position
+    playSound('eatSound');
+    food = getRandomFoodPosition();
     headsEaten++;
 	document.getElementById('foodRemaining').innerText = 'Remaining: ' + (16 - headsEaten);
     
-    // Check for win condition
-    if (headsEaten === 16) {
+  if (headsEaten === 16) {
       backgroundMusic.pause();
       playSound('win');
       showModal('Congratulations! You win!');
       return;
     }
   } else {
-    snake.pop(); // Remove the tail of the snake
+    snake.pop();
   }
 }
 
@@ -201,8 +200,8 @@ function checkSnakeCollision(head) {
 function resetGame() {
   isGameOver = false;
   snake.length = 0;
-  startingX = Math.floor(gridWidth / 2);  // Start in the center of the grid on the X-axis
-  startingY = Math.floor(gridHeight / 2); // Start in the center of the grid on the Y-axis
+  startingX = Math.floor(gridWidth / 2);  
+  startingY = Math.floor(gridHeight / 2); 
 
   const randDirection = Math.random();
   if (randDirection < 0.33) {
@@ -226,8 +225,7 @@ function resetGame() {
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();
      }
-	   // stop win and lose sounds
-  stopSound('win');
+	   stopSound('win');
   stopSound('lose');
    document.getElementById('foodRemaining').innerText = 'Food Remaining: 16';
  }
@@ -258,7 +256,7 @@ function startMusic() {
 }
 
 function handleKeyPress(event) {
-  if (!gameRunning) return; // Ignore key presses when game is not running
+  if (!gameRunning) return; 
   const key = event.key;
   let newDirection = null;
   if (key === 'ArrowUp' && direction !== 'down') {
@@ -273,29 +271,23 @@ function handleKeyPress(event) {
 
   if (newDirection) {
     if (directionQueue.length > 0) {
-      // Check if the last queued direction is opposite to the new direction
       const lastQueuedDirection = directionQueue[directionQueue.length - 1];
       if ((newDirection === 'up' && lastQueuedDirection === 'down') ||
           (newDirection === 'down' && lastQueuedDirection === 'up') ||
           (newDirection === 'left' && lastQueuedDirection === 'right') ||
           (newDirection === 'right' && lastQueuedDirection === 'left')) {
-        // If so, replace it with the new direction to prevent self-collision
         directionQueue[directionQueue.length - 1] = newDirection;
       } else {
-        // Otherwise, add the new direction to the queue
         directionQueue.push(newDirection);
       }
     } else {
-      // If the queue is empty, check if the new direction is opposite to the current direction
       if ((newDirection === 'up' && direction === 'down') ||
           (newDirection === 'down' && direction === 'up') ||
           (newDirection === 'left' && direction === 'right') ||
           (newDirection === 'right' && direction === 'left')) {
-        // If so, ignore it to prevent self-collision
-        return;
+      return;
       } else {
-        // Otherwise, add the new direction to the queue
-        directionQueue.push(newDirection);
+      directionQueue.push(newDirection);
       }
     }
   }
@@ -318,7 +310,7 @@ document.body.addEventListener('touchend', function(event) {
   let absX = Math.abs(dx);
   let absY = Math.abs(dy);
 
-  if (Math.max(absX, absY) > 10) { // If the swipe distance is less than 10px, ignore it
+  if (Math.max(absX, absY) > 10) {
     if (absX > absY) {
       if (dx > 0 && direction !== 'left') {
         direction = 'right';
@@ -368,20 +360,18 @@ canvas.addEventListener('touchmove', function(e) {
 
 canvas.addEventListener('click', function(event) {
     const rect = event.target.getBoundingClientRect();
-    const x = event.clientX - rect.left; //x position within the element
-    const y = event.clientY - rect.top;  //y position within the element
+    const x = event.clientX - rect.left; 
+    const y = event.clientY - rect.top;  
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
     if (Math.abs(x - centerX) > Math.abs(y - centerY)) {
-        // The click was closer to the horizontal axis, so move left or right
         if (x < centerX && direction !== 'right') {
             direction = 'left';
         } else if (x > centerX && direction !== 'left') {
             direction = 'right';
         }
     } else {
-        // The click was closer to the vertical axis, so move up or down
         if (y < centerY && direction !== 'down') {
             direction = 'up';
         } else if (y > centerY && direction !== 'up') {
@@ -392,7 +382,6 @@ canvas.addEventListener('click', function(event) {
 
 const INITIAL_GAME_SPEED = 100;
 
-// In your event listener for the modalButton
 document.getElementById('modalButton').addEventListener('click', function() {
   let difficultyMultiplier;
 
@@ -400,33 +389,33 @@ document.getElementById('modalButton').addEventListener('click', function() {
     case 'easy': difficultyMultiplier = 1.0; break;
     case 'medium': difficultyMultiplier = 0.75; break;
     case 'hard': difficultyMultiplier = 0.5; break;
-    default: difficultyMultiplier = 1.0; break; // Default to 'easy'
+    default: difficultyMultiplier = 1.0; break;
   }
 
-  gameSpeed = INITIAL_GAME_SPEED * difficultyMultiplier; // Adjust to the speed you want based on difficulty
+  gameSpeed = INITIAL_GAME_SPEED * difficultyMultiplier; 
   if (isMobile) {
-    gameSpeed *= 1.5; // Make the game speed easier on mobile
+    gameSpeed *= 1.5; 
   }
 
   document.getElementById('modal').style.display = 'none';
   resetGame();
-  gameRunning = true; // Set gameRunning to true when starting a new game
+  gameRunning = true; 
 
-  // Start the game loop
-  gameLoop();
+  if (gameLoopTimeout) {
+  clearTimeout(gameLoopTimeout);
+}
+gameLoop();
 });
 
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
-    // If the Enter key is pressed and the modal is being displayed, start a new game
     document.getElementById('modalButton').click();
   }
 });
 
 document.addEventListener('keydown', handleKeyPress);
 
-// start the game using the modal instead of immediately
 showModal('Welcome to Office Slinks!');
 
-const versionHistory = "Version 1.2.004";
+const versionHistory = "Version 1.2.005";
 document.getElementById('versionHistory').innerText = versionHistory;
