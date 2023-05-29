@@ -339,10 +339,27 @@ document.body.addEventListener('touchend', function(event) {
 });
 
 
-window.addEventListener('keydown', function(e) {
-  if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    e.preventDefault();
+let keyPressed = null;
+
+window.addEventListener('keydown', (event) => {
+  const key = event.key;
+  if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight') {
+	event.preventDefault();
+    keyPressed = key;
   }
+});
+
+window.addEventListener('keyup', () => {
+  if (keyPressed === 'ArrowUp' && direction !== 'down') {
+    directionQueue.push('up');
+  } else if (keyPressed === 'ArrowDown' && direction !== 'up') {
+    directionQueue.push('down');
+  } else if (keyPressed === 'ArrowLeft' && direction !== 'right') {
+    directionQueue.push('left');
+  } else if (keyPressed === 'ArrowRight' && direction !== 'left') {
+    directionQueue.push('right');
+  }
+  keyPressed = null;
 });
 
 canvas.addEventListener('touchmove', function(e) {
@@ -411,5 +428,5 @@ document.addEventListener('keydown', handleKeyPress);
 // start the game using the modal instead of immediately
 showModal('Welcome to Office Slinks!');
 
-const versionHistory = "Version 1.2.003";
+const versionHistory = "Version 1.2.004";
 document.getElementById('versionHistory').innerText = versionHistory;
