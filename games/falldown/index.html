@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Fall Down</title>
-</head>
 <body>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
     <script>
@@ -14,7 +11,7 @@
                 x: canvas.width / 2,
                 y: canvas.height / 2,
                 radius: 10,
-                dx: 0, // add an x velocity for the ball
+                dx: 0,
                 dy: 2
             },
             platforms: [],
@@ -72,13 +69,23 @@
                 game.ball.dx = -game.ball.dx;
             }
 
+            // check for collision with platforms
+            for (let platform of game.platforms) {
+                if (game.ball.y + game.ball.radius > platform.y && game.ball.y - game.ball.radius < platform.y + game.platformHeight) {
+                    if (game.ball.x - game.ball.radius < platform.gapStart || game.ball.x + game.ball.radius > platform.gapStart + game.gapWidth) {
+                        game.ball.dy = -game.ball.dy;
+                    }
+                }
+            }
+
             requestAnimationFrame(updateGame);
         }
 
         updateGame();
 
-        // add event listeners for keydown events
+        // add event listeners for keydown and keyup events
         document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
 
         function keyDownHandler(e) {
             if(e.key == "Right" || e.key == "ArrowRight") {
@@ -86,6 +93,12 @@
             }
             else if(e.key == "Left" || e.key == "ArrowLeft") {
                 game.ball.dx = -2;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if((e.key == "Right" || e.key == "ArrowRight") || (e.key == "Left" || e.key == "ArrowLeft")) {
+                game.ball.dx = 0;
             }
         }
     </script>
