@@ -1,7 +1,5 @@
 still to do:
-
+snake:
 consider obstacles
 
 more themes
-
-parent game selector
