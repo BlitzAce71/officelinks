@@ -1,106 +1,128 @@
 <!DOCTYPE html>
 <html>
+<head>
+<title>Fall Down!</title>
+</head>
 <body>
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+ <canvas id="gameCanvas" width="600" height="600"></canvas>
+ <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-        let game = {
-            ball: {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                radius: 10,
-                dx: 0,
-                dy: 2
-            },
-            platforms: [],
-            platformHeight: 10,
-            gapWidth: 100,
-            platformDistance: 100,
-            platformSpeed: 1,
-            generatePlatform: function(y) {
-                let gapStart = Math.random() * (canvas.width - this.gapWidth);
-                this.platforms.push({y, gapStart});
-            }
-        };
+let game = {
+ ball: {
+ x: canvas.width / 2,
+ y: canvas.height / 2,
+ radius: 10,
+ dx: 0,
+ dy: 2
+ },
+ platforms: [],
+ platformHeight: 10,
+ gapWidth: 100,
+ platformSpeed: 1,
+ platformPassed: 0,
+ frames: 0,
+ platformInterval: 150, // Generate platform every 150 frames
+ generatePlatform: function(y) {
+ let gapStart = Math.random() * (canvas.width - this.gapWidth);
+ this.platforms.push({y: y, gapStart: gapStart});
+ },
+};
 
-        game.generatePlatform(canvas.height - game.platformHeight);
+// Generate the initial platforms
+for(let i = 0; i < canvas.height; i += game.platformInterval){
+ game.generatePlatform(canvas.height - i);
+}
 
-        function drawBall() {
-            ctx.beginPath();
-            ctx.arc(game.ball.x, game.ball.y, game.ball.radius, 0, Math.PI*2);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
-        }
+function drawBall() {
+ ctx.beginPath();
+ ctx.arc(game.ball.x, game.ball.y, game.ball.radius, 0, Math.PI*2);
+ ctx.fillStyle = "#0095DD";
+ ctx.fill();
+ ctx.closePath();
+}
 
-        function drawPlatforms() {
-            for (let platform of game.platforms) {
-                ctx.beginPath();
-                ctx.rect(0, platform.y, platform.gapStart, game.platformHeight);
-                ctx.rect(platform.gapStart + game.gapWidth, platform.y, canvas.width - platform.gapStart - game.gapWidth, game.platformHeight);
-                ctx.fillStyle = "#0095DD";
-                ctx.fill();
-                ctx.closePath();
-            }
-        }
+function drawPlatforms() {
+ for (let platform of game.platforms) {
+ ctx.beginPath();
+ ctx.rect(0, platform.y, platform.gapStart, game.platformHeight);
+ ctx.rect(platform.gapStart + game.gapWidth, platform.y, canvas.width - platform.gapStart - game.gapWidth, game.platformHeight);
+ ctx.fillStyle = "#0095DD";
+ ctx.fill();
+ ctx.closePath();
+ }
+}
 
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            drawBall();
-            drawPlatforms();
+function updateGame() {
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ 
+ drawBall();
+ drawPlatforms();
 
-            game.ball.x += game.ball.dx;
-            game.ball.y += game.ball.dy;
+ game.ball.x += game.ball.dx;
+ game.ball.y += game.ball.dy;
 
-            for (let platform of game.platforms) {
-                platform.y -= game.platformSpeed;
-            }
+ // move platforms up
+ for (let platform of game.platforms) {
+ platform.y -= game.platformSpeed;
+ }
 
-            if (game.platforms[0].y < 0) {
-                game.platforms.shift();
-                game.generatePlatform(canvas.height - game.platformHeight);
-            }
+ // check if the ball has passed a platform
+ if (game.platforms[0] && game.ball.y - game.ball.radius < game.platforms[0].y) {
+ game.platforms.shift();
+ game.platformPassed += 1;
+ if (game.platformPassed % 10 == 0) {
+ game.platformSpeed += 0.2;
+ game.platformInterval = Math.max(30, game.platformInterval - 20);
+ }
+ }
 
-            // check if the ball is hitting the left or right wall
-            if (game.ball.x + game.ball.dx > canvas.width-game.ball.radius || game.ball.x + game.ball.dx < game.ball.radius) {
-                game.ball.dx = -game.ball.dx;
-            }
+ // generate a new platform at the bottom if necessary
+ if (game.frames % game.platformInterval === 0) {
+ game.generatePlatform(canvas.height);
+ }
+ 
+ // check if the ball is hitting the left or right wall
+ if (game.ball.x + game.ball.dx > canvas.width-game.ball.radius || game.ball.x + game.ball.dx < game.ball.radius) {
+ game.ball.dx = -game.ball.dx;
+ }
 
-            // check for collision with platforms
-            for (let platform of game.platforms) {
-                if (game.ball.y + game.ball.radius > platform.y && game.ball.y - game.ball.radius < platform.y + game.platformHeight) {
-                    if (game.ball.x - game.ball.radius < platform.gapStart || game.ball.x + game.ball.radius > platform.gapStart + game.gapWidth) {
-                        game.ball.dy = -game.ball.dy;
-                    }
-                }
-            }
+ // check for collision with platforms
+ for (let platform of game.platforms) {
+ if (game.ball.y + game.ball.radius > platform.y && game.ball.y - game.ball.radius < platform.y + game.platformHeight) {
+ if (game.ball.x - game.ball.radius < platform.gapStart || game.ball.x + game.ball.radius > platform.gapStart + game.gapWidth) {
+ game.ball.dy = -1;
+ } else {
+ game.ball.dy = 2; // continue falling at the regular speed when in a gap
+ }
+ }
+ }
 
-            requestAnimationFrame(updateGame);
-        }
+ game.frames++;
+ requestAnimationFrame(updateGame);
+}
 
-        updateGame();
+updateGame();
 
-        // add event listeners for keydown and keyup events
-        document.addEventListener("keydown", keyDownHandler, false);
-        document.addEventListener("keyup", keyUpHandler, false);
+// add event listeners for keydown and keyup events
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
 
-        function keyDownHandler(e) {
-            if(e.key == "Right" || e.key == "ArrowRight") {
-                game.ball.dx = 2;
-            }
-            else if(e.key == "Left" || e.key == "ArrowLeft") {
-                game.ball.dx = -2;
-            }
-        }
+function keyDownHandler(e) {
+ if(e.key == "Right" || e.key == "ArrowRight") {
+ game.ball.dx = 4;
+ }
+ else if(e.key == "Left" || e.key == "ArrowLeft") {
+ game.ball.dx = -4;
+ }
+}
 
-        function keyUpHandler(e) {
-            if((e.key == "Right" || e.key == "ArrowRight") || (e.key == "Left" || e.key == "ArrowLeft")) {
-                game.ball.dx = 0;
-            }
-        }
-    </script>
+function keyUpHandler(e) {
+ if((e.key == "Right" || e.key == "ArrowRight") || (e.key == "Left" || e.key == "ArrowLeft")) {
+ game.ball.dx = 0;
+ }
+}
+</script>
 </body>
 </html>
