@@ -3,11 +3,11 @@
 <body>
 <canvas id="gameCanvas" width="960" height="640"></canvas>
 <script>
-// Ball object
-
 let Ball = function() {
- this.radius = 30;
- this.dx = 5;
+    this.lastPlatform = null; // last platform the ball collided with
+    this.lastPlatformSide = null; // "left" or "right"
+	this.radius = 30;
+ this.dx = 10;
  this.x = game.canvas.width / 2;
  this.y = game.canvas.height / 2;
  this.dy = 1;
@@ -41,11 +41,13 @@ Ball.prototype.stopMovingRight = function() {
 }
 // Platform object
 let Platform = function(y) {
- this.height = 10;
- this.gap = Math.random() * (game.canvas.width / 2) + 50; // Size of the gap
+  this.id = Date.now();  // Assign a unique ID to each platform
+  this.height = 10;
+ this.gap = Math.random() * (game.canvas.width / 2) + 100; // Size of the gap
  this.leftWidth = Math.random() * (game.canvas.width - this.gap); // Width of the left block
  this.rightWidth = game.canvas.width - this.gap - this.leftWidth; // Width of the right block
  this.y = y;
+ Platform.nextId = 0;
 }
  // Game object
  let Game = function() {
@@ -55,7 +57,7 @@ let Platform = function(y) {
  this.platforms = [];
  this.score = 0;
  this.speed = 2;
- this.maxSpeed = 6;
+ this.maxSpeed = 20;
  this.spawnInterval = 120; // Platforms spawn every 120 frames initially
  this.counter = this.spawnInterval;
  }
@@ -112,7 +114,7 @@ Game.prototype.update = function() {
  this.ball.y = this.canvas.height - this.ball.radius;
  this.ball.dy = 0;
  } else if (this.ball.dy < this.ball.maxDy) {
- this.ball.dy += 0.1; // Accelerate downwards
+ this.ball.dy += .1; // accelerate down
  }
 
  // Update platform positions and remove off-screen platforms
@@ -129,12 +131,25 @@ Game.prototype.update = function() {
 // Collisions with platforms
 for (let i = 0; i < this.platforms.length; i++) {
     let plat = this.platforms[i];
-    if (this.ball.y + this.ball.radius > plat.y && this.ball.y - this.ball.radius < plat.y + plat.height &&
-        ((this.ball.x - this.ball.radius < plat.leftWidth) || (this.ball.x + this.ball.radius > plat.leftWidth + plat.gap))) {
-        this.ball.dy = 0; // Stop falling when hitting a platform
-        this.ball.y = plat.y - this.ball.radius; // Move ball on top of platform
+    if (this.ball.dy >= 0 && this.ball.y + this.ball.radius > plat.y && this.ball.y - this.ball.radius < plat.y + plat.height) {
+        if (this.ball.x - this.ball.radius < plat.leftWidth) {
+            if (!(this.ball.lastPlatform == plat.id && this.ball.lastPlatformSide == "right")) {
+                this.ball.dy = 0; // Stop falling when hitting a platform
+                this.ball.y = plat.y - this.ball.radius; // Move ball on top of platform
+                this.ball.lastPlatform = plat.id;
+                this.ball.lastPlatformSide = "left";
+            }
+        } else if (this.ball.x + this.ball.radius > plat.leftWidth + plat.gap) {
+            if (!(this.ball.lastPlatform == plat.id && this.ball.lastPlatformSide == "left")) {
+                this.ball.dy = 0; // Stop falling when hitting a platform
+                this.ball.y = plat.y - this.ball.radius; // Move ball on top of platform
+                this.ball.lastPlatform = plat.id;
+                this.ball.lastPlatformSide = "right";
+            }
+        }
     }
 }
+
 
  // Spawn new platforms
  this.counter--;
