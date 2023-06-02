@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <body>
-<canvas id="gameCanvas" width="960" height="640"></canvas>
+<canvas id="gameCanvas"></canvas>
 <script>
+ let canvas = document.getElementById('gameCanvas');
+    canvas.width = window.innerWidth - 25;
+    canvas.height = window.innerHeight - 25;
+	
 let Ball = function() {
     this.lastPlatform = null; // last platform the ball collided with
     this.lastPlatformSide = null; // "left" or "right"
@@ -48,6 +52,10 @@ let Platform = function(y) {
  this.rightWidth = game.canvas.width - this.gap - this.leftWidth; // Width of the right block
  this.y = y;
  Platform.nextId = 0;
+  this.imageLeft = new Image();
+  this.imageLeft.src = 'platforms.png';
+  this.imageRight = new Image();
+  this.imageRight.src = 'platforms.png';
 }
  // Game object
  let Game = function() {
@@ -79,9 +87,9 @@ this.ctx.drawImage(this.ball.image, this.ball.x - this.ball.radius, this.ball.y 
 for (let i = 0; i < this.platforms.length; i++) {
  this.ctx.fillStyle = "#0095DD";
  // Draw left block
- this.ctx.fillRect(0, this.platforms[i].y, this.platforms[i].leftWidth, this.platforms[i].height);
+ this.ctx.drawImage(this.platforms[i].imageLeft, 0, this.platforms[i].y, this.platforms[i].leftWidth, this.platforms[i].height);
  // Draw right block
- this.ctx.fillRect(this.platforms[i].leftWidth + this.platforms[i].gap, this.platforms[i].y, this.platforms[i].rightWidth, this.platforms[i].height);
+ this.ctx.drawImage(this.platforms[i].imageRight, this.platforms[i].leftWidth + this.platforms[i].gap, this.platforms[i].y, this.platforms[i].rightWidth, this.platforms[i].height);
 }
 
  // Draw score
@@ -123,7 +131,7 @@ Game.prototype.update = function() {
  if (this.platforms[i].y + this.platforms[i].height < 0) {
  this.platforms.splice(i, 1);
  this.score++;
- this.speed = Math.min(this.maxSpeed, this.speed + 0.1); // Increase speed up to maxSpeed
+ this.speed = Math.min(this.maxSpeed, this.speed + 0.01); // Increase speed up to maxSpeed
  this.spawnInterval = Math.max(30, this.spawnInterval - 2); // Decrease spawnInterval down to 30 frames
  }
  }
