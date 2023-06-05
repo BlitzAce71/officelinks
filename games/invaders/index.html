@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div id="inputModeDialog" style="position: fixed; width: 200px; height: 100px; background-color: #fff; left: 50%; top: 50%; transform: translate(-50%, -50%);">
+ Select input mode:<br>
+ <button onclick="startGame('keyboard')">Keyboard</button>
+ <button onclick="startGame('mouse')">Mouse</button>
+ <button onclick="startGame('touch')">Touch</button>
+</div>
+
+<canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
+
+<script>
+function startGame(inputMode) {
+ // Hide the input mode dialog
+ document.getElementById('inputModeDialog').style.display = 'none';
+ // Show the game canvas
+ var canvas = document.getElementById('gameCanvas');
+ canvas.style.display = 'block';
+ 
+ // Define the game objects
+ var player = { x: 400, y: 550, width: 50, height: 10 };
+ var bullets = [];
+ var alienBullets = [];
+ var aliens = [];
+ var barriers = [];
+ var alienDirection = 1;
+ var bulletSpeed = 5;
+ var alienBulletSpeed = 2;
+ var alienSpeed = 1;
+ var playerSpeed = 5;
+
+ // Key states
+ var leftPressed = false;
+ var rightPressed = false;
+ var spacePressed = false;
+
+ // Setup the aliens
+ for (var i = 0; i < 10; i++) {
+ for (var j = 0; j < 3; j++) {
+ aliens.push({ x: i * 80, y: 50 + j * 30, width: 40, height: 20 });
+ }
+ }
+
+// Setup the barriers
+for (var i = 0; i < 4; i++) {
+    var barrierBlocks = [];
+    for (var j = 0; j < 2; j++) { // bottom layer, two sides
+        barrierBlocks.push({ x: 150 * (i + 1) + j * 30, y: 470, width: 30, height: 10 });
+    }
+    for (var j = 0; j < 3; j++) { // top layer, three pieces
+        barrierBlocks.push({ x: 150 * (i + 1) + j * 20, y: 450, width: 20, height: 10 });
+    }
+    barriers.push(barrierBlocks);
+}
+
+ // Create the canvas context
+ var context = canvas.getContext('2d');
+
+ // Input handling
+ if (inputMode === 'keyboard') {
+ window.addEventListener('keydown', function(event) {
+ if (event.key === 'ArrowLeft') {
+ leftPressed = true;
+ } else if (event.key === 'ArrowRight') {
+ rightPressed = true;
+ } else if (event.key === ' ') {
+ spacePressed = true;
+ }
+ });
+ window.addEventListener('keyup', function(event) {
+ if (event.key === 'ArrowLeft') {
+ leftPressed = false;
+ } else if (event.key === 'ArrowRight') {
+ rightPressed = false;
+ } else if (event.key === ' ') {
+ spacePressed = false;
+ }
+ });
+ } else if (inputMode === 'mouse') {
+ window.addEventListener('mousemove', function(event) {
+ player.x = event.clientX - player.width / 2;
+ });
+ window.addEventListener('click', function(event) {
+ bullets.push({ x: player.x + player.width / 2, y: player.y, width: 10, height: 20 });
+ });
+ } else if (inputMode === 'touch') {
+ window.addEventListener('touchmove', function(event) {
+ player.x = event.touches[0].clientX - player.width / 2;
+ event.preventDefault();
+ }, { passive: false });
+ window.addEventListener('touchstart', function(event) {
+ bullets.push({ x: player.x + player.width / 2, y: player.y, width: 10, height: 20 });
+ });
+ }
+
+ // Game loop
+ setInterval(function() {
+ // Clear the canvas
+ context.clearRect(0, 0, canvas.width, canvas.height);
+ 
+ // Draw player
+ context.fillRect(player.x, player.y, player.width, player.height);
+ 
+ // Draw aliens
+ aliens.forEach(function(alien) {
+ context.fillRect(alien.x, alien.y, alien.width, alien.height);
+ });
+
+ // Draw bullets
+ bullets.forEach(function(bullet) {
+ context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+ });
+
+ // Draw alien bullets
+ alienBullets.forEach(function(bullet) {
+ context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+ });
+
+// Draw barriers
+barriers.forEach(function(barrierBlocks) {
+    barrierBlocks.forEach(function(block) {
+        context.fillRect(block.x, block.y, block.width, block.height);
+    });
+});
+ // Move player
+ if (leftPressed) {
+ player.x -= playerSpeed;
+ }
+ if (rightPressed) {
+ player.x += playerSpeed;
+ }
+ if (spacePressed) {
+ bullets.push({ x: player.x + player.width / 2, y: player.y, width: 10, height: 20 });
+ spacePressed = false;
+ }
+
+ // Move aliens
+ aliens.forEach(function(alien) {
+ alien.x += alienDirection * alienSpeed;
+ });
+
+ // Aliens shoot bullets
+ if (Math.random() < 0.01) {
+ var alien = aliens[Math.floor(Math.random() * aliens.length)];
+ alienBullets.push({ x: alien.x + alien.width / 2, y: alien.y + alien.height, width: 10, height: 20 });
+ }
+
+ // Check for edge of screen for aliens
+ var changeDirection = false;
+ aliens.forEach(function(alien) {
+ if (alien.x < 0 || alien.x > canvas.width) {
+ changeDirection = true;
+ }
+ });
+ if (changeDirection) {
+ alienDirection *= -1;
+ aliens.forEach(function(alien) {
+ alien.y += 20;
+ });
+ }
+
+ // Move bullets
+ bullets.forEach(function(bullet) {
+ bullet.y -= bulletSpeed;
+ });
+
+ // Move alien bullets
+ alienBullets.forEach(function(bullet) {
+ bullet.y += alienBulletSpeed;
+ });
+
+ // Collision detection for bullets and barriers
+bullets = bullets.filter(function(bullet) {
+    var keepBullet = true;
+    barriers.forEach(function(barrierBlocks) {
+        for (var i = 0; i < barrierBlocks.length; i++) {
+            var block = barrierBlocks[i];
+            if (bullet.x < block.x + block.width && bullet.x + bullet.width > block.x && bullet.y < block.y + block.height && bullet.y + bullet.height > block.y) {
+                barrierBlocks.splice(i, 1); // Remove the block that was hit
+                keepBullet = false;
+                break;
+            }
+        }
+    });
+    return keepBullet;
+});
+// Collision detection for alien bullets and barriers
+alienBullets = alienBullets.filter(function(bullet) {
+    var keepBullet = true;
+    barriers.forEach(function(barrierBlocks) {
+        for (var i = 0; i < barrierBlocks.length; i++) {
+            var block = barrierBlocks[i];
+            if (bullet.x < block.x + block.width && bullet.x + bullet.width > block.x && bullet.y < block.y + block.height && bullet.y + bullet.height > block.y) {
+                barrierBlocks.splice(i, 1); // Remove the block that was hit
+                keepBullet = false;
+                break;
+            }
+        }
+    });
+    return keepBullet;
+});
+
+ // Collision detection for bullets
+ bullets = bullets.filter(function(bullet) {
+ var keepBullet = true;
+ aliens = aliens.filter(function(alien) {
+ if (bullet.x < alien.x + alien.width && bullet.x + bullet.width > alien.x && bullet.y < alien.y + alien.height && bullet.y + bullet.height > alien.y) {
+ keepBullet = false;
+ return false;
+ }
+ return true;
+ });
+ return keepBullet;
+ });
+
+ // Collision detection for alien bullets
+ alienBullets = alienBullets.filter(function(bullet) {
+ var keepBullet = true;
+ if (bullet.x < player.x + player.width && bullet.x + bullet.width > player.x && bullet.y < player.y + player.height && bullet.y + bullet.height > player.y) {
+ keepBullet = false;
+ // Here you would typically end the game or decrease player health
+ }
+ return keepBullet;
+ });
+
+ }, 1000 / 30); // 30 FPS
+}
+</script>
+</body>
+</html>
